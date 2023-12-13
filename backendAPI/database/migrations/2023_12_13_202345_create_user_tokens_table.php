@@ -13,9 +13,18 @@ class CreateUserRTokensTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_r_tokens', function (Blueprint $table) {
+        Schema::create('user_tokens', function (Blueprint $table) {
+            //not sure if this table is gonna be needed yet as we havent used laravel Auth yet
+            //TODO: remove this table if not needed
+
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -26,6 +35,6 @@ class CreateUserRTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_r_tokens');
+        Schema::dropIfExists('user_tokens');
     }
 }

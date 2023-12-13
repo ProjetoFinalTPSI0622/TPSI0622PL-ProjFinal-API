@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\UserRTokens;
 use Illuminate\Http\Request;
 
-class UserRTokensController extends Controller
+class UserTokensController extends Controller
 {
     /**
      * Display a listing of the resource.
