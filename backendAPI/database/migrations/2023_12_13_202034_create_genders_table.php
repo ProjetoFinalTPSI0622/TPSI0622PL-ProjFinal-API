@@ -15,6 +15,7 @@ class CreateGendersTable extends Migration
     {
         Schema::create('genders', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->timestamps();
         });
     }
@@ -26,6 +27,8 @@ class CreateGendersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('genders');
+        Schema::table('flights', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 }

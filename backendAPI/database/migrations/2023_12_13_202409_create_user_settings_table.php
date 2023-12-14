@@ -15,6 +15,8 @@ class CreateUserSettingsTable extends Migration
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->enum('notification_preference');
             $table->timestamps();
         });
     }
@@ -26,6 +28,8 @@ class CreateUserSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_settings');
+        Schema::table('flights', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 }

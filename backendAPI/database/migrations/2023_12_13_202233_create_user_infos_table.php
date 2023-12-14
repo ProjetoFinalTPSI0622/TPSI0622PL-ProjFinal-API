@@ -14,7 +14,16 @@ class CreateUserInfosTable extends Migration
     public function up()
     {
         Schema::create('user_infos', function (Blueprint $table) {
-            $table->id();
+            $table->id()->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('name');
+            $table->string('normalized_name');
+            $table->int('nif');
+            $table->date('birthday_date');
+            $table->foreignId('gender_id')->references('id')->on('genders')->onDelete('cascade')->onUpdate('cascade');
+            $table->string('profile_picture_path');
+            $table->int('phone_number');
+            $table->string('address');
+            $table->foreignId('country_id')->references('id')->on('countries')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +35,8 @@ class CreateUserInfosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_infos');
+        Schema::table('flights', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 }
