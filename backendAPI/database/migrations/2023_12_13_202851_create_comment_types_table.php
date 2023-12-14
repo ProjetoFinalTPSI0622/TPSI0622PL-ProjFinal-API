@@ -15,6 +15,7 @@ class CreateCommentTypesTable extends Migration
     {
         Schema::create('comment_types', function (Blueprint $table) {
             $table->id();
+            $table->string('type_name');
             $table->timestamps();
         });
     }

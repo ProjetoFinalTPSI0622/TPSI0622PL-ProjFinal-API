@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserRTokensTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class CreateUserRTokensTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_r_tokens', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
+            $table->string('role');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ class CreateUserRTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_r_tokens');
+        Schema::dropIfExists('roles');
     }
 }
