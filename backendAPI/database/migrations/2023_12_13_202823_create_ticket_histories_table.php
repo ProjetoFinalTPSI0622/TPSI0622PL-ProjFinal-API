@@ -15,12 +15,15 @@ class CreateTicketHistoriesTable extends Migration
     {
         Schema::create('ticket_histories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ticket_id')->constrained();
-            $table->foreignId('updated_by')->constrained();
+            $table->unsignedBigInteger('ticket_id');
+            $table->unsignedBigInteger('updated_by');
             $table->string('field_changed');
             $table->string('old_value')->nullable();
             $table->string('new_value')->nullable();
-            $table->timestamp();
+            $table->timestamps();
+
+            $table->foreign('ticket_id')->references('id')->on('tickets');
+            $table->foreign('updated_by')->references('id')->on('users');
         });
     }
 

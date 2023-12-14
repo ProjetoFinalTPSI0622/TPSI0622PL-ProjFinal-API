@@ -16,7 +16,7 @@ class CreateUserSettingsTable extends Migration
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->enum('notification_preference');
+            $table->enum('notification_preference', ['all', 'important', 'none'])->default('all'); //TODO: check the notificatin_preferences needed
             $table->timestamps();
         });
     }
