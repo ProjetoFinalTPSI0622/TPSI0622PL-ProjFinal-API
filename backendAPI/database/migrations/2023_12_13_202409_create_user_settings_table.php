@@ -18,6 +18,7 @@ class CreateUserSettingsTable extends Migration
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->enum('notification_preference', ['all', 'important', 'none'])->default('all'); //TODO: check the notificatin_preferences needed
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -28,8 +29,6 @@ class CreateUserSettingsTable extends Migration
      */
     public function down()
     {
-        Schema::table('flights', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+            Schema::dropIfExists('user_settings');
     }
 }

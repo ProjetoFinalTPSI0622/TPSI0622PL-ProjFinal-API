@@ -14,7 +14,12 @@ class StatusesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $statuses = Statuses::all();
+            return response()->json($statuses, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class StatusesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $status = Statuses::create($request->all());
+            return response()->json($status, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,13 @@ class StatusesController extends Controller
      * @param  \App\Statuses  $statuses
      * @return \Illuminate\Http\Response
      */
-    public function show(Statuses $statuses)
+    public function show(Statuses $status)
     {
-        //
+        try {
+            return response()->json($status, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +81,14 @@ class StatusesController extends Controller
      * @param  \App\Statuses  $statuses
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Statuses $statuses)
+    public function update(Request $request, Statuses $status)
     {
-        //
+        try {
+            $status->update($request->all());
+            return response()->json($status, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +97,13 @@ class StatusesController extends Controller
      * @param  \App\Statuses  $statuses
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Statuses $statuses)
+    public function destroy(Statuses $status)
     {
-        //
+        try {
+            $status->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

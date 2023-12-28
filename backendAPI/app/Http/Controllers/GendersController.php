@@ -14,7 +14,13 @@ class GendersController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $genders = Genders::all();
+            return response()->json($genders, 200);
+
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +41,12 @@ class GendersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $gender = Genders::create($request->all());
+            return response()->json($gender, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +55,13 @@ class GendersController extends Controller
      * @param  \App\Genders  $genders
      * @return \Illuminate\Http\Response
      */
-    public function show(Genders $genders)
+    public function show(Genders $gender)
     {
-        //
+        try {
+            return response()->json($gender, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +82,14 @@ class GendersController extends Controller
      * @param  \App\Genders  $genders
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Genders $genders)
+    public function update(Request $request, Genders $gender)
     {
-        //
+        try {
+            $gender->update($request->all());
+            return response()->json($gender, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +98,13 @@ class GendersController extends Controller
      * @param  \App\Genders  $genders
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Genders $genders)
+    public function destroy(Genders $gender)
     {
-        //
+        try {
+            $gender->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }
