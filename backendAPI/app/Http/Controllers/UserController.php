@@ -21,16 +21,21 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (auth('api')->check()) {
-            try {
-                // Retrieve all users
-                $users = User::all();
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('user')) { // Check if user is admin TODO: change to admin
+                try {
+                    // Retrieve all users
+                    $users = User::all();
 
-                // Return the list of users
-                return response()->json($users, 200);
-            } catch (Exception $e) {
-                // Handle exceptions if any
-                return response()->json($e->getMessage(), 500);
+                    // Return the list of users
+                    return response()->json($users, 200);
+                } catch (Exception $e) {
+                    // Handle exceptions if any
+                    return response()->json($e->getMessage(), 500);
+                }
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
             }
         } else {
             // Return unauthorized response if not authenticated
@@ -47,9 +52,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        if(Auth::check()){ // Check if user is logged in
-            if(User::find(Auth::id())->hasRole('admin')){ // Check if user is admin
+        if(Auth::guard('api')->check()){ // Check if user is logged in
+            if(Auth::guard('api')->user()->hasRole('admin')){ // Check if user is admin
                 try {
+
                     $validatedData = $request->validate([
                         'name' => 'required|max:255',
                         'email' => 'required|unique:users|max:255',
@@ -57,12 +63,18 @@ class UserController extends Controller
                         'internalcode' => 'required|max:255',
                     ]);
 
-                    // Hash password
-                    //https://laravel.com/docs/7.x/hashing
                     $validatedData['password'] = Hash::make($validatedData['password']);
 
+                    if($request->has('role')){
+                        $role = Roles::where('role', $request->get('role'))->first();
+                    }
+                    else {
+                        $role = Roles::where('role', 'user')->first();
+                    }
+
                     $user = User::create($validatedData);
-                    $user->roles()->attach(Roles::where('role', 'user')->first());
+                    $user->roles()->attach($role);
+
                     return response()->json($user, 201);
                 }
                 catch (Exception $e) {
@@ -86,7 +98,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        if (Auth::check()) {
+        if (Auth::guard('api')->check()) {
             if (Auth::user()->hasRole('admin')) { // Check if user is admin
                 try {
                     return response()->json($user, 200);
@@ -111,7 +123,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if(Auth::check()){ // Check if user is logged in
+        if(Auth::guard('api')->check()){ // Check if user is logged in
             if(Auth::user()->hasRole('admin')){ // Check if user is admin
                 try {
                     $validatedData = $request->validate([
@@ -144,7 +156,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if(Auth::check()){ // Check if user is logged in
+        if(Auth::guard('api')->check()){ // Check if user is logged in
             if(Auth::user()->hasRole('admin')){ // Check if user is admin
                 try {
                     $user->User::with('roles')->find($user->id)->roles()->detach();
@@ -169,7 +181,7 @@ class UserController extends Controller
      */
     public function getAuthenticatedUser()
     {
-        if(Auth::check()){ // Check if user is logged in
+        if(Auth::guard('api')->check()){ // Check if user is logged in
             try {
                 $user = Auth::user();
                 return response()->json($user, 200);
@@ -189,7 +201,7 @@ class UserController extends Controller
     */
     public function search(Request $request) //search by either id name or email
     {
-        if(Auth::check()){ // Check if user is logged in
+        if(Auth::guard('api')->check()){ // Check if user is logged in
             if(Auth::user()->hasRole('admin')){ // Check if user is admin
                 try {
                     $search = $request->get('search');
@@ -209,6 +221,30 @@ class UserController extends Controller
         }
         else {
             return response()->json("Not logged in", 401);
+        }
+    }
+
+    /**
+     *  Authenticate User && Generate Token
+     */
+    public function userLogin(Request $request){
+        try {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
+                $user = Auth::user();
+                $token = $user->createToken('authToken')->accessToken;
+                return response()->json(['user' => $user, 'token' => $token], 200);
+            }
+            else {
+                return response()->json(['error' => 'Unauthorised'], 401);
+            }
+        }
+        catch (Exception $e) {
+            return response()->json($e, 500);
         }
     }
 }
