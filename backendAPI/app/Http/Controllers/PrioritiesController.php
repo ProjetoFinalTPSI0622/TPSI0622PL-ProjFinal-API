@@ -14,7 +14,12 @@ class PrioritiesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $priorities = Priorities::all();
+            return response()->json($priorities, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class PrioritiesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $priority = Priorities::create($request->all());
+            return response()->json($priority, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,13 @@ class PrioritiesController extends Controller
      * @param  \App\Priorities  $priorities
      * @return \Illuminate\Http\Response
      */
-    public function show(Priorities $priorities)
+    public function show(Priorities $priority)
     {
-        //
+        try {
+            return response()->json($priority, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +81,14 @@ class PrioritiesController extends Controller
      * @param  \App\Priorities  $priorities
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Priorities $priorities)
+    public function update(Request $request, Priorities $priority)
     {
-        //
+        try {
+            $priority->update($request->all());
+            return response()->json($priority, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +97,13 @@ class PrioritiesController extends Controller
      * @param  \App\Priorities  $priorities
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Priorities $priorities)
+    public function destroy(Priorities $priority)
     {
-        //
+        try {
+            $priority->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

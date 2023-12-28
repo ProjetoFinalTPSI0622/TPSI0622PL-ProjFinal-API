@@ -18,6 +18,7 @@ class CreateUserSavedResponsesTable extends Migration
             $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->string('response_text');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -28,8 +29,6 @@ class CreateUserSavedResponsesTable extends Migration
      */
     public function down()
     {
-        Schema::table('flights', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+            Schema::dropIfExists('user_saved_responses');
     }
 }
