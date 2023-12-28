@@ -17,4 +17,6 @@ class UserSavedResponses extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
 }
