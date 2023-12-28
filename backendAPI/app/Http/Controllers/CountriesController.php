@@ -14,7 +14,12 @@ class CountriesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $countries = Countries::all();
+            return response()->json($countries, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class CountriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $country = Countries::create($request->all());
+            return response()->json($country, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,13 @@ class CountriesController extends Controller
      * @param  \App\Countries  $countries
      * @return \Illuminate\Http\Response
      */
-    public function show(Countries $countries)
+    public function show(Countries $country)
     {
-        //
+        try {
+            return response()->json($country, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +81,14 @@ class CountriesController extends Controller
      * @param  \App\Countries  $countries
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Countries $countries)
+    public function update(Request $request, Countries $country)
     {
-        //
+        try {
+            $country->update($request->all());
+            return response()->json($country, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +97,13 @@ class CountriesController extends Controller
      * @param  \App\Countries  $countries
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Countries $countries)
+    public function destroy(Countries $country)
     {
-        //
+        try {
+            $country->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

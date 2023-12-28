@@ -14,7 +14,12 @@ class CommentTypesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $commentTypes = CommentTypes::all();
+            return response()->json($commentTypes, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class CommentTypesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $commentType = CommentTypes::create($request->all());
+            return response()->json($commentType, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,13 @@ class CommentTypesController extends Controller
      * @param  \App\CommentTypes  $commentTypes
      * @return \Illuminate\Http\Response
      */
-    public function show(CommentTypes $commentTypes)
+    public function show(CommentTypes $commentType)
     {
-        //
+        try {
+            return response()->json($commentType, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +81,14 @@ class CommentTypesController extends Controller
      * @param  \App\CommentTypes  $commentTypes
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, CommentTypes $commentTypes)
+    public function update(Request $request, CommentTypes $commentType)
     {
-        //
+        try {
+            $commentType->update($request->all());
+            return response()->json($commentType, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +97,13 @@ class CommentTypesController extends Controller
      * @param  \App\CommentTypes  $commentTypes
      * @return \Illuminate\Http\Response
      */
-    public function destroy(CommentTypes $commentTypes)
+    public function destroy(CommentTypes $commentType)
     {
-        //
+        try {
+            $commentType->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

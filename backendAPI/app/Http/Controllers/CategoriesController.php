@@ -14,7 +14,12 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $categories = Categories::all();
+            return response()->json($categories, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $category = Categories::create($request->all());
+            return response()->json($category, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,13 @@ class CategoriesController extends Controller
      * @param  \App\Categories  $categories
      * @return \Illuminate\Http\Response
      */
-    public function show(Categories $categories)
+    public function show(Categories $category)
     {
-        //
+        try {
+            return response()->json($category, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +81,14 @@ class CategoriesController extends Controller
      * @param  \App\Categories  $categories
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Categories $categories)
+    public function update(Request $request, Categories $category)
     {
-        //
+        try {
+            $category->update($request->all());
+            return response()->json($category, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +97,13 @@ class CategoriesController extends Controller
      * @param  \App\Categories  $categories
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Categories $categories)
+    public function destroy(Categories $category)
     {
-        //
+        try {
+            $category->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }
