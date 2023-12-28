@@ -19,8 +19,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-Route::get('/users/search', 'UserController@search')->name('users.search');
-Route::apiResource('users', 'UserController');
+Route::post('/login', 'UserController@userLogin')->name('login');
+Route::post('/createUser', 'UserController@store')->name('createUser');
+
+Route::apiResource('user', 'UserController');
+
 
 Route::apiResource('gender', 'GendersController');
 Route::apiResource('country', 'CountriesController');
