@@ -14,7 +14,12 @@ class AttachmentsController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $attachments = Attachments::all();
+            return response()->json($attachments, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class AttachmentsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $attachment = Attachments::create($request->all());
+            return response()->json($attachment, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,13 @@ class AttachmentsController extends Controller
      * @param  \App\Attachments  $attachments
      * @return \Illuminate\Http\Response
      */
-    public function show(Attachments $attachments)
+    public function show(Attachments $attachment)
     {
-        //
+        try {
+            return response()->json($attachment, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -67,9 +81,14 @@ class AttachmentsController extends Controller
      * @param  \App\Attachments  $attachments
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Attachments $attachments)
+    public function update(Request $request, Attachments $attachment)
     {
-        //
+        try {
+            $attachment->update($request->all());
+            return response()->json($attachment, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -78,8 +97,13 @@ class AttachmentsController extends Controller
      * @param  \App\Attachments  $attachments
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Attachments $attachments)
+    public function destroy(Attachments $attachment)
     {
-        //
+        try {
+            $attachment->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

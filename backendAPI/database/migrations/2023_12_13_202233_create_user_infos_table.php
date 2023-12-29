@@ -25,6 +25,7 @@ class CreateUserInfosTable extends Migration
             $table->string('address');
             $table->foreignId('country_id')->references('id')->on('countries')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users');
         });
@@ -37,8 +38,6 @@ class CreateUserInfosTable extends Migration
      */
     public function down()
     {
-        Schema::table('flights', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+        Schema::dropIfExists('user_infos');
     }
 }
