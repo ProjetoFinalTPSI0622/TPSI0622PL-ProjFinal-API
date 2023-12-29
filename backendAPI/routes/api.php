@@ -17,3 +17,20 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::post('/login', 'UserController@userLogin')->name('login');
+Route::post('/createUser', 'UserController@store')->name('createUser');
+
+Route::apiResource('user', 'UserController');
+
+
+Route::apiResource('gender', 'GendersController');
+Route::apiResource('country', 'CountriesController');
+Route::apiResource('attachment', 'AttachmentsController');
+Route::apiResource('status', 'StatusesController');
+Route::apiResource('priority', 'PrioritiesController');
+Route::apiResource('category', 'CategoriesController');
+Route::apiResource('commentType', 'CommentTypesController');
+Route::apiResource('role', 'RolesController');
+

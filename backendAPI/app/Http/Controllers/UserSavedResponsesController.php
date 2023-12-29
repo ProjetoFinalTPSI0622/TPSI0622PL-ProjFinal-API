@@ -2,40 +2,60 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\UserSavedResponses;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserSavedResponsesController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        //
+        if(Auth::check()){ // Check if user is logged in
+            try {
+                $user = User::find(Auth::id());
+                return response()->json($user->savedResponses, 200);
+            }
+            catch (Exception $e) {
+                return response()->json($e, 500);
+            }
+        }
+        else {
+            return response()->json("Not logged in", 401);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {
-        //
+        if(Auth::check()){ // Check if user is logged in
+            try {
+                $user = User::find(Auth::id());
+                $userSavedResponses = new UserSavedResponses();
+                $userSavedResponses->user_id = $user->id;
+                $userSavedResponses->response_text = $request->response_text;
+                $userSavedResponses->save();
+                return response()->json($userSavedResponses, 200);
+            }
+            catch (Exception $e) {
+                return response()->json($e, 500);
+            }
+        }
+        else {
+            return response()->json("Not logged in", 401);
+        }
     }
 
     /**
@@ -45,17 +65,6 @@ class UserSavedResponsesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(UserSavedResponses $userSavedResponses)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\UserSavedResponses  $userSavedResponses
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(UserSavedResponses $userSavedResponses)
     {
         //
     }
