@@ -23,8 +23,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'user'], function() {
     Route::put('/login', 'UserController@userLogin');
 });
 
-
-
+Route::apiResource( 'tickets', 'TicketsController' );
 Route::apiResource('gender', 'GendersController');
 Route::apiResource('country', 'CountriesController');
 Route::apiResource('attachment', 'AttachmentsController');
