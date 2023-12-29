@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::group(['middleware' => 'auth:api', 'prefix' => 'user'], function() {
-    Route::get('/', 'UserController@index');
-    Route::post('/', 'UserController@store');
-    Route::put('/{id}', 'UserController@update');
-    Route::delete('/{id}', 'UserController@destroy');
-    Route::get('/search', 'UserController@search');
-    Route::put('/login', 'UserController@userLogin');
+Route::group(['prefix' => 'user'], function() {
+    Route::get('/', 'UserController@index')->middleware('auth:api')->name('user.index');
+    Route::post('/', 'UserController@store')->middleware('auth:api')->name('user.store');
+    Route::put('/{id}', 'UserController@update')->middleware('auth:api')->name('user.update');
+    Route::delete('/{id}', 'UserController@destroy')->middleware('auth:api')->name('user.destroy');
+    Route::get('/search', 'UserController@search')->middleware('auth:api')->name('user.search');
+    Route::put('/login', 'UserController@userLogin')->name('user.login'); //login doesnt go trough auth guard
 });
 
 Route::apiResource( 'tickets', 'TicketsController' );
