@@ -91,30 +91,6 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\User  $user
-     * @return JsonResponse
-     */
-    public function edit(User $user)
-    {
-        if (Auth::guard('api')->check()) {
-            if (Auth::user()->hasRole('admin')) { // Check if user is admin
-                try {
-                    return response()->json($user, 200);
-                } catch (Exception $e) {
-                    return response()->json($e, 500);
-                }
-            } else {
-                return response()->json("Not authorized", 401);
-            }
-        }
-        else {
-            return response()->json("Not logged in", 401);
-        }
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -202,11 +178,10 @@ class UserController extends Controller
     public function search(Request $request) //search by either id name or email
     {
         if(Auth::guard('api')->check()){ // Check if user is logged in
-            if(Auth::user()->hasRole('admin')){ // Check if user is admin
+            if(Auth::user()->hasRole('user')){ // Check if user is admin
                 try {
                     $search = $request->get('search');
-                    $users = User::where('id', 'LIKE', '%'.$search.'%') //search by either id name or email
-                        ->orWhere('name', 'LIKE', '%'.$search.'%')
+                    $users = User::where('name', 'LIKE', '%'.$search.'%') //search by either name or email
                         ->orWhere('email', 'LIKE', '%'.$search.'%')
                         ->get();
                     return response()->json($users, 200);

@@ -14,15 +14,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => 'auth:api', 'prefix' => 'user'], function() {
+    Route::get('/', 'UserController@index');
+    Route::post('/', 'UserController@store');
+    Route::put('/{id}', 'UserController@update');
+    Route::delete('/{id}', 'UserController@destroy');
+    Route::get('/search', 'UserController@search');
+    Route::put('/login', 'UserController@userLogin');
 });
 
-
-Route::post('/login', 'UserController@userLogin')->name('login');
-Route::post('/createUser', 'UserController@store')->name('createUser');
-
-Route::apiResource('user', 'UserController');
 
 
 Route::apiResource('gender', 'GendersController');
