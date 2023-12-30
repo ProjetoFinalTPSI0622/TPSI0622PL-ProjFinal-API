@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Middleware\Authenticate;
 use App\User;
 use App\Roles;
 use Exception;
@@ -10,6 +9,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
+
 
 class UserController extends Controller
 {
@@ -52,8 +53,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        if(Auth::guard('api')->check()){ // Check if user is logged in
-            if(Auth::guard('api')->user()->hasRole('admin')){ // Check if user is admin
+        //if(Auth::guard('api')->check()){ // Check if user is logged in
+            //if(Auth::guard('api')->user()->hasRole('admin')){ // Check if user is admin
                 try {
 
                     $validatedData = $request->validate([
@@ -80,14 +81,14 @@ class UserController extends Controller
                 catch (Exception $e) {
                     return response()->json($e, 500);
                 }
-            }
-            else {
+            //}
+            /*else {
                 return response()->json("Not authorized", 401);
             }
         }
         else {
             return response()->json("Not logged in", 401);
-        }
+        }*/
     }
 
     /**
@@ -211,9 +212,12 @@ class UserController extends Controller
 
             if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
                 $user = Auth::user();
-                $token = $user->createToken('authToken')->accessToken;
-                dd($token);
-                return response()->json(['user' => $user, 'token' => $token], 200);
+                try{
+                    $token = $user->createToken('authToken')->accessToken;
+                } catch (Exception $e) {
+                    return response()->json($e, 500);
+                }
+                return response()->json(['token' => $token], 200);
             }
 
             else {
