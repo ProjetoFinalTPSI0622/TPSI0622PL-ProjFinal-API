@@ -212,9 +212,12 @@ class UserController extends Controller
 
             if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
                 $user = Auth::user();
-                $token = $user->createToken('authToken')->accessToken;
-                dd($token);
-                return response()->json(['user' => $user, 'token' => $token], 200);
+                try{
+                    $token = $user->createToken('authToken')->accessToken;
+                } catch (Exception $e) {
+                    return response()->json($e, 500);
+                }
+                return response()->json(['token' => $token], 200);
             }
 
             else {
