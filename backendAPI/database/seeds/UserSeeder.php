@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -14,22 +15,22 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'Fabio',
-            'email' => 'fabioTestes@hotmail.com',
-            'password' => bcrypt('123456'),
+            'email' => 'fabioTeste@hotmail.com',
+            'password' => Hash::make('123456'),
             'internalcode' => 'ABC123',
         ]);
 
         DB::table('users')->insert([
             'name' => 'Goncalo',
             'email' => 'goncaloTeste@hotmail.com',
-            'password' => bcrypt('123456'),
+            'password' => Hash::make('123456'),
             'internalcode' => 'ABC124'
         ]);
 
         DB::table('users')->insert([
             'name' => 'Filipe',
             'email' => 'filipeTeste@hotmail.com',
-            'password' => bcrypt('123456'),
+            'password' => Hash::make('123456'),
             'internalcode' => 'ABC222'
         ]);
     }

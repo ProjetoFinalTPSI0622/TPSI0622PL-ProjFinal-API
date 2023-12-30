@@ -212,8 +212,10 @@ class UserController extends Controller
             if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
                 $user = Auth::user();
                 $token = $user->createToken('authToken')->accessToken;
-                return response()->json(['token' => $token], 200);
+                dd($token);
+                return response()->json(['user' => $user, 'token' => $token], 200);
             }
+
             else {
                 return response()->json(['error' => 'Unauthorised'], 401);
             }
