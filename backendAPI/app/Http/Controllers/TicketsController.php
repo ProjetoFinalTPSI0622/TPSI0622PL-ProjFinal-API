@@ -14,7 +14,11 @@ class TicketsController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            return response()->json(Tickets::with(['status','Priority'])->get(), 200);
+        }catch (\Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +39,22 @@ class TicketsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $request->validate([
+                /*'createdby' => 'required|exists:users,id',
+                'assignedto' => 'required|exists:users,id',*/
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                /*'status' => 'required|exists:statuses,id',
+                'priority' => 'required|exists:priorities,id',
+                'category' => 'required|exists:categories,id',*/
+            ]);
+
+            $ticket = Tickets::create($request->all());
+
+            return response()->json($ticket, 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao criar ticket', 'details' => $e->getMessage()], 500);        }
     }
 
     /**
