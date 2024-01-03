@@ -55,6 +55,18 @@ class TicketHistoryController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\TicketHistory  $ticketHistory
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(TicketHistory $ticketHistory)
+    {
+        //
+
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
