@@ -9,13 +9,13 @@ class Tickets extends Model
 {
     use SoftDeletes;
     protected $fillable = [
-       /* 'createdby',
-        'assignedto',*/
+        'createdby',
+        'assignedto',
         'title',
         'description',
-        /*'status',
+        'status',
         'priority',
-        'category',*/
+        'category',
     ];
 
     public function createdByUser()
@@ -33,16 +33,16 @@ class Tickets extends Model
     // Exemplo de relacionamento com os modelos Status, Priority e Category (muitos para muitos)
     public function status()
     {
-        return $this->belongsTo(Status::class);
+        return $this->belongsTo(Statuses::class);
     }
 
     public function priority()
     {
-        return $this->belongsTo(Priority::class);
+        return $this->belongsTo(Priorities::class);
     }
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Categories::class);
     }
 }
