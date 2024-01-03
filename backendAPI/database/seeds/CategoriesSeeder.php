@@ -11,6 +11,10 @@ class CategoriesSeeder extends Seeder
      */
     public function run()
     {
-        //
+        DB::table('categories')->insert([
+            ['category_name' => 'Salas'],
+            ['category_name' => 'Manutenção'],
+            ['category_name' => 'Jardim'],
+        ]);
     }
 }
