@@ -14,7 +14,12 @@ class CommentsController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $comments = Comments::all();
+            return response()->json($comments, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -34,8 +39,13 @@ class CommentsController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
+    {//dd($request->all());
+        try {
+            $comment = Comments::create($request->all());
+            return response()->json($comment, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -44,9 +54,14 @@ class CommentsController extends Controller
      * @param  \App\Comments  $comments
      * @return \Illuminate\Http\Response
      */
-    public function show(Comments $comments)
+    public function show(Comments $comment)
     {
-        //
+
+            try {
+                return response()->json($comment, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
     }
 
     /**
@@ -67,9 +82,15 @@ class CommentsController extends Controller
      * @param  \App\Comments  $comments
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Comments $comments)
+    public function update(Request $request, Comments $comment)
     {
-        //
+
+            try {
+                $comment->update($request->all());
+                return response()->json($comment, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
     }
 
     /**
@@ -80,6 +101,12 @@ class CommentsController extends Controller
      */
     public function destroy(Comments $comments)
     {
-        //
+
+                try {
+                    $comments->delete();
+                    return response()->json(['message' => 'Deleted'], 205);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
     }
 }

@@ -14,7 +14,12 @@ class UserInfoController extends Controller
      */
     public function index()
     {
-        //
+        try {
+                $userInfos = UserInfo::all();
+                return response()->json($userInfos, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class UserInfoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $userInfo = UserInfo::create($request->all());
+            return response()->json($userInfo, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -46,7 +56,11 @@ class UserInfoController extends Controller
      */
     public function show(UserInfo $userInfo)
     {
-        //
+        try {
+            return response()->json($userInfo, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -69,7 +83,12 @@ class UserInfoController extends Controller
      */
     public function update(Request $request, UserInfo $userInfo)
     {
-        //
+        try {
+            $userInfo->update($request->all());
+            return response()->json($userInfo, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -80,6 +99,11 @@ class UserInfoController extends Controller
      */
     public function destroy(UserInfo $userInfo)
     {
-        //
+        try {
+            $userInfo->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

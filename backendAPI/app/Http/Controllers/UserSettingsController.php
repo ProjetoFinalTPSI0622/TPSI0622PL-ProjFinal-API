@@ -14,7 +14,12 @@ class UserSettingsController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $userSettings = UserSettings::all();
+            return response()->json($userSettings, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class UserSettingsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $userSettings = UserSettings::create($request->all());
+            return response()->json($userSettings, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -46,7 +56,11 @@ class UserSettingsController extends Controller
      */
     public function show(UserSettings $userSettings)
     {
-        //
+        try {
+            return response()->json($userSettings, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -69,7 +83,12 @@ class UserSettingsController extends Controller
      */
     public function update(Request $request, UserSettings $userSettings)
     {
-        //
+        try {
+            $userSettings->update($request->all());
+            return response()->json($userSettings, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -80,6 +99,11 @@ class UserSettingsController extends Controller
      */
     public function destroy(UserSettings $userSettings)
     {
-        //
+        try {
+            $userSettings->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }

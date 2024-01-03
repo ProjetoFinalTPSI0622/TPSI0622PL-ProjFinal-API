@@ -14,7 +14,12 @@ class TicketHistoryController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $ticketHistory = TicketHistory::all();
+            return response()->json($ticketHistory, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -35,7 +40,12 @@ class TicketHistoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $ticketHistory = TicketHistory::create($request->all());
+            return response()->json($ticketHistory, 201);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -46,7 +56,11 @@ class TicketHistoryController extends Controller
      */
     public function show(TicketHistory $ticketHistory)
     {
-        //
+        try {
+            return response()->json($ticketHistory, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -69,7 +83,12 @@ class TicketHistoryController extends Controller
      */
     public function update(Request $request, TicketHistory $ticketHistory)
     {
-        //
+        try {
+            $ticketHistory->update($request->all());
+            return response()->json($ticketHistory, 200);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 
     /**
@@ -80,6 +99,11 @@ class TicketHistoryController extends Controller
      */
     public function destroy(TicketHistory $ticketHistory)
     {
-        //
+        try {
+            $ticketHistory->delete();
+            return response()->json(['message' => 'Deleted'], 205);
+        } catch (Exception $exception) {
+            return response()->json(['error' => $exception], 500);
+        }
     }
 }
