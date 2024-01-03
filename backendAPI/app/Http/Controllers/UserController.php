@@ -23,7 +23,7 @@ class UserController extends Controller
     public function index()
     {
         if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('user')) { // Check if user is admin TODO: change to admin
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
                 try {
                     // Retrieve all users
                     $users = User::all();
