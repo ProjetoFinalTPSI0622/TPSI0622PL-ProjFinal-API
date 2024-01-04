@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Tickets;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class TicketsController extends Controller
 {
@@ -14,12 +19,44 @@ class TicketsController extends Controller
      */
     public function index()
     {
-        try {                                       //ver as relaçoes no model
-            $tickets = Tickets::all();
-            return response()->json($tickets, 200);
-            //return response()->json(Tickets::with(['status','priority','category'])->get(), 200);
-        }catch (\Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+                try {
+                    // Retrieve all users
+                    $tickets = Tickets::all();
+
+                    // Return the list of users
+                    return response()->json($tickets, 200);
+                } catch (Exception $e) {
+                    // Handle exceptions if any
+                    return response()->json($e->getMessage(), 500);
+                }
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
+        }
+    }
+
+    public function userTickets()
+    {
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            try {
+                // Retrieve all users
+                $tickets = Tickets::where('createdby', Auth::guard('api')->user()->id)->get();
+
+                // Return the list of users
+                return response()->json($tickets, 200);
+            } catch (Exception $e) {
+                // Handle exceptions if any
+                return response()->json($e->getMessage(), 500);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
     }
 
@@ -31,36 +68,59 @@ class TicketsController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'createdby' => 'required|exists:users,id',
-                'assignedto' => 'required|exists:users,id',
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'status' => 'required|exists:statuses,id',
-                'priority' => 'required|exists:priorities,id',
-                'category' => 'required|exists:categories,id',
-            ]);
-
-            $ticket = Tickets::create($request->all());
-
-            return response()->json($ticket, 201);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao criar ticket', 'details' => $e->getMessage()], 500);        }
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+                try {
+                    $validatedData = $request->validateWithBag('store', [
+                        'createdby' => 'required|exists:users,id',
+                        'assignedto' => 'required|exists:users,id',
+                        'title' => 'required|string|max:255',
+                        'description' => 'required|string|max:1000',
+                        'status' => 'required|exists:statuses,id',
+                        'priority' => 'required|exists:priorities,id',
+                        'category' => 'required|exists:categories,id',
+                    ]);
+                    $ticket = Tickets::create($validatedData);
+                    return response()->json($ticket, 201);
+                } catch (ValidationException $e) {
+                    $errors = $e->errors();
+                    return response()->json(['errors' => $errors], 422);
+                } catch (\Exception $e) {
+                    return response()->json($e->getMessage(), 500);
+                }
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
+        }
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Tickets  $tickets
+     * @param  \App\Tickets  $ticket
      * @return \Illuminate\Http\Response
      */
     public function show(Tickets $ticket)
     {
-        try {
-         return response()->json($ticket, 200);
-        }catch (\Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+                try {
+                    return response()->json($ticket, 200);
+                } catch (Exception $e) {
+                    // Handle exceptions if any
+                    return response()->json($e->getMessage(), 500);
+                }
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
     }
 
@@ -68,25 +128,36 @@ class TicketsController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Tickets  $tickets
+     * @param  \App\Tickets  $ticket
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Tickets $ticket)
     {
-        try {
-            $validatedData = $request->validate([
-                'createdby' => 'required|exists:users,id',
-                'assignedto' => 'required|exists:users,id',
-                'title' => 'required|string|max:255',
-                'description' => 'required|string',
-                'status' => 'required|exists:statuses,id',
-                'priority' => 'required|exists:priorities,id',
-                'category' => 'required|exists:categories,id',
-            ]);
-            $ticket->update($validatedData);
-            return response()->json($ticket, 200);
-        }catch (\Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+                try {
+                    $validatedData = $request->validate([
+                        'createdby' => 'required|exists:users,id',
+                        'assignedto' => 'required|exists:users,id',
+                        'title' => 'required|string|max:255',
+                        'description' => 'required|string',
+                        'status' => 'required|exists:statuses,id',
+                        'priority' => 'required|exists:priorities,id',
+                        'category' => 'required|exists:categories,id',
+                    ]);
+                    $ticket->update($validatedData);
+                    return response()->json($ticket, 200);
+                } catch (Exception $e) {
+                    // Handle exceptions if any
+                    return response()->json($e->getMessage(), 500);
+                }
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
     }
 
@@ -98,12 +169,24 @@ class TicketsController extends Controller
      */
     public function destroy(Tickets $ticket)
     {
-        try {
-            $ticket->delete();
-            return response()->json(['message' => 'Ticket Deleted'], 205);
-        }catch (\Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+                try {
+                    $ticket->delete();
+                    return response()->json(['message' => 'Ticket Deleted'], 205);
+                } catch (Exception $e) {
+                    // Handle exceptions if any
+                    return response()->json($e->getMessage(), 500);
+                }
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
 

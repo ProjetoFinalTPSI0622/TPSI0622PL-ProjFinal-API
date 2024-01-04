@@ -23,8 +23,20 @@ Route::group(['prefix' => 'user'], function() {
     Route::get('/search', 'UserController@search')->middleware('auth:api')->name('user.search');
 
 });
+//Todos os tickets do user loggado
+Route::get('/userTickets', 'TicketsController@userTickets')->middleware('auth:api')->name('tickets.userTickets');
+//Search tickets por nome
+Route::get('/tickets/search', 'TicketsController@search')->middleware('auth:api')->name('tickets.search');
+Route::post('/tickets', 'TicketsController@store')->middleware('auth:api')->name('tickets.store');
 
-Route::apiResource( 'tickets', 'TicketsController' );
+Route::group(['prefix' => '/tickets'], function() {
+    Route::get('/', 'TicketsController@index')->middleware('auth:api')->name('tickets.index');
+    Route::get('/{ticket}', 'TicketsController@show')->middleware('auth:api')->name('tickets.show');
+    Route::put('/{ticket}', 'TicketsController@update')->middleware('auth:api')->name('tickets.update');
+    Route::delete('/{ticket}', 'TicketsController@destroy')->middleware('auth:api')->name('tickets.destroy');
+
+});
+
 Route::apiResource('gender', 'GendersController');
 Route::apiResource('country', 'CountriesController');
 Route::apiResource('attachment', 'AttachmentsController');
