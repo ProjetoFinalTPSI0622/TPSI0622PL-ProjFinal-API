@@ -8,9 +8,10 @@ class Attachments extends Model
 {
     protected $fillable = [
         'ticket_id',
-        'FieldName',
+        'FileName',
         'FileType',
-        'FilePath'
+        'FilePath',
+        'FileSize'
     ];
     public function ticket()
     {
