@@ -13,7 +13,14 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::put('user/login', 'UserController@userLogin'); //login doesnt go trough auth guard
+
+Route::group([ 'prefix' => 'auth' ], function () {
+    Route::post( '/login', 'AuthenticationController@userLogin' )->name( 'auth.login' );
+    Route::get( '/check', 'AuthenticationController@checkAuth' )->name( 'auth.check' );
+    //Route::post( '/logout', 'AuthenticationController@logout' )->name( 'auth.logout' ); not implemented yet
+} );
+
+
 Route::post('/user', 'UserController@store')->name('user.store');
 
 Route::group(['prefix' => 'user'], function() {
