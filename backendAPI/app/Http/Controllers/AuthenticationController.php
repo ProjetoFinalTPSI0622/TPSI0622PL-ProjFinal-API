@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AuthenticationController extends Controller
 {
@@ -20,22 +21,24 @@ class AuthenticationController extends Controller
 
             if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
                 $user = Auth::user();
-                try{
+
+                try {
                     $token = $user->createToken('authToken')->accessToken;
+                    $cookie = Cookie::make('token', $token, 60, '/', null, false, true);
                 } catch (Exception $e) {
                     return response()->json($e, 500);
                 }
-                return response()->json(['token' => $token], 200);
-            }
+                return response()->json(['message' => 'Login Successful'], 200)->cookie($cookie)->header('Access-Control-Allow-Origin', true);
 
-            else {
+            } else {
                 return response()->json(['error' => 'Unauthorised'], 401);
             }
-        }
-        catch (Exception $e) {
+
+        } catch (Exception $e) {
             return response()->json($e, 500);
         }
     }
+
 
     public function checkAuth(Request $request){
         try {
