@@ -24,7 +24,14 @@ class AuthenticationController extends Controller
 
                 try {
                     $token = $user->createToken('authToken')->accessToken;
-                    $cookie = Cookie::make('Bearer', $token, 60, '/', null, false, true);
+
+                    $cookie = \Symfony\Component\HttpFoundation\Cookie::create("Bearer")
+                        ->withValue($token)
+                        ->withExpires(time() + 60 * 60)
+                        ->withSecure(true)
+                        ->withHttpOnly(true)
+                        ->withSameSite("none")
+                    ;
                 } catch (Exception $e) {
                     return response()->json($e, 500);
                 }
