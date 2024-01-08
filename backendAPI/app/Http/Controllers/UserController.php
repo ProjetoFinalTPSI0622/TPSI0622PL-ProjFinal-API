@@ -200,32 +200,4 @@ class UserController extends Controller
         }
     }
 
-    /**
-     *  Authenticate User && Generate Token
-     */
-    public function userLogin(Request $request){
-        try {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
-
-            if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
-                $user = Auth::user();
-                try{
-                    $token = $user->createToken('authToken')->accessToken;
-                } catch (Exception $e) {
-                    return response()->json($e, 500);
-                }
-                return response()->json(['token' => $token], 200);
-            }
-
-            else {
-                return response()->json(['error' => 'Unauthorised'], 401);
-            }
-        }
-        catch (Exception $e) {
-            return response()->json($e, 500);
-        }
-    }
 }
