@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Categories;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
@@ -14,12 +15,20 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        try {
-            $categories = Categories::all();
-            return response()->json($categories, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+                try {
+                    $categories = Categories::all();
+                    return response()->json($categories, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -40,11 +49,23 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $category = Categories::create($request->all());
-            return response()->json($category, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $category = Categories::create($request->all());
+                    return response()->json($category, 201);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
     }
 
@@ -56,11 +77,19 @@ class CategoriesController extends Controller
      */
     public function show(Categories $category)
     {
-        try {
-            return response()->json($category, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+                try {
+                    return response()->json($category, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -83,12 +112,25 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, Categories $category)
     {
-        try {
-            $category->update($request->all());
-            return response()->json($category, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $category->update($request->all());
+                    return response()->json($category, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -99,11 +141,24 @@ class CategoriesController extends Controller
      */
     public function destroy(Categories $category)
     {
-        try {
-            $category->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $category->delete();
+                    return response()->json(['message' => 'Deleted'], 205);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 }

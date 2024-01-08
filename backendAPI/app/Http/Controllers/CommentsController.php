@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Comments;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentsController extends Controller
 {
@@ -14,12 +15,20 @@ class CommentsController extends Controller
      */
     public function index()
     {
-        try {
-            $comments = Comments::all();
-            return response()->json($comments, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $comments = Comments::all();
+                return response()->json($comments, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
 
@@ -31,12 +40,20 @@ class CommentsController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $comment = Comments::create($request->all());
-            return response()->json($comment, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $comment = Comments::create($request->all());
+                return response()->json($comment, 201);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -47,11 +64,19 @@ class CommentsController extends Controller
      */
     public function show(Comments $comment)
     {
-        try {
-            return response()->json($comment, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                return response()->json($comment, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
 
@@ -64,12 +89,20 @@ class CommentsController extends Controller
      */
     public function update(Request $request, Comments $comment)
     {
-        try {
-            $comment->update($request->all());
-            return response()->json($comment, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $comment->update($request->all());
+                return response()->json($comment, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -80,11 +113,19 @@ class CommentsController extends Controller
      */
     public function destroy(Comments $comments)
     {
-        try {
-            $comments->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $comments->delete();
+                return response()->json(['message' => 'Deleted'], 205);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 }

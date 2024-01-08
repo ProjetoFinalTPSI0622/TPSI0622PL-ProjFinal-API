@@ -14,17 +14,30 @@ class AttachmentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($ticket_id)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
+        if (Auth::guard('api')->check()) { // Verifica se o usuário está logado
+
             try {
-                $attachments = Attachments::all();
-                return response()->json($attachments, 200);
+                $attachments = Attachments::where('ticket_id', $ticket_id)->get();
+
+                $files = [];
+                foreach ($attachments as $attachment) {
+                    $files[] = [
+                        'FileName' => $attachment->FileName,
+                        'FileType' => $attachment->FileType,
+                        'FilePath' => $attachment->FilePath,
+                        'FileSize' => $attachment->FileSize,
+                        'Link' => Storage::url($attachment->FilePath),
+                    ];
+                }
+
+                return response()->json($files, 200);
             } catch (Exception $exception) {
-                return response()->json(['error' => $exception], 500);
+                return response()->json(['error' => $exception->getMessage()], 500);
             }
-        }
-        else {
+
+        } else {
             return response()->json("Not logged in", 401);
         }
     }

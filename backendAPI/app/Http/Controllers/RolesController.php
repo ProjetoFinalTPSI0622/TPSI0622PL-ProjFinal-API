@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Roles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RolesController extends Controller
 {
@@ -14,12 +15,25 @@ class RolesController extends Controller
      */
     public function index()
     {
-        try {
-            $roles = Roles::all();
-            return response()->json($roles, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $roles = Roles::all();
+                    return response()->json($roles, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -40,12 +54,25 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $role = Roles::create($request->all());
-            return response()->json($role, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $role = Roles::create($request->all());
+                    return response()->json($role, 201);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -56,11 +83,24 @@ class RolesController extends Controller
      */
     public function show(Roles $role)
     {
-        try {
-            return response()->json($role, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    return response()->json($role, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -83,12 +123,25 @@ class RolesController extends Controller
      */
     public function update(Request $request, Roles $role)
     {
-        try {
-            $role->update($request->all());
-            return response()->json($role, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $role->update($request->all());
+                    return response()->json($role, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -99,11 +152,24 @@ class RolesController extends Controller
      */
     public function destroy(Roles $role)
     {
-        try {
-            $role->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $role->delete();
+                    return response()->json(['message' => 'Deleted'], 205);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 }

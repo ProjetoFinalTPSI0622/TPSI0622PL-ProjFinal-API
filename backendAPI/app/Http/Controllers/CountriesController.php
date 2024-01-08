@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Countries;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CountriesController extends Controller
 {
@@ -14,12 +15,20 @@ class CountriesController extends Controller
      */
     public function index()
     {
-        try {
-            $countries = Countries::all();
-            return response()->json($countries, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $countries = Countries::all();
+                return response()->json($countries, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -40,12 +49,25 @@ class CountriesController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $country = Countries::create($request->all());
-            return response()->json($country, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $country = Countries::create($request->all());
+                    return response()->json($country, 201);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -56,11 +78,19 @@ class CountriesController extends Controller
      */
     public function show(Countries $country)
     {
-        try {
-            return response()->json($country, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                return response()->json($country, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -83,12 +113,25 @@ class CountriesController extends Controller
      */
     public function update(Request $request, Countries $country)
     {
-        try {
-            $country->update($request->all());
-            return response()->json($country, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $country->update($request->all());
+                    return response()->json($country, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -99,11 +142,24 @@ class CountriesController extends Controller
      */
     public function destroy(Countries $country)
     {
-        try {
-            $country->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $country->delete();
+                    return response()->json(['message' => 'Deleted'], 205);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 }
