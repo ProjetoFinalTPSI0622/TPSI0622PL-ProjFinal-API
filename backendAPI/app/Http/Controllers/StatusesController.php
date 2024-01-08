@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Statuses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StatusesController extends Controller
 {
@@ -14,22 +15,20 @@ class StatusesController extends Controller
      */
     public function index()
     {
-        try {
-            $statuses = Statuses::all();
-            return response()->json($statuses, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard("api")->check()) {
+            if (Auth::guard("api")->user()->hasRole("admin")) {
+                try {
+                    $statuses = Statuses::all();
+                    return response()->json($statuses, 200);
+                } catch (Exception $exception) {
+                    return response()->json(["error" => $exception], 500);
+                }
+            } else {
+                return response()->json("Not enough permissions", 401);
+            }
+        } else {
+            return response()->json("Not authenticated", 401);
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -64,17 +63,6 @@ class StatusesController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Statuses  $statuses
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Statuses $statuses)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -83,11 +71,19 @@ class StatusesController extends Controller
      */
     public function update(Request $request, Statuses $status)
     {
-        try {
-            $status->update($request->all());
-            return response()->json($status, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard("api")->check()) {
+            if (Auth::guard("api")->user()->hasRole("admin")) {
+                try {
+                    $status->update($request->all());
+                    return response()->json($status, 200);
+                } catch (Exception $exception) {
+                    return response()->json(["error" => $exception], 500);
+                }
+            } else {
+                return response()->json("Not enough permissions", 401);
+            }
+        } else {
+            return response()->json("Not authenticated", 401);
         }
     }
 
@@ -99,11 +95,19 @@ class StatusesController extends Controller
      */
     public function destroy(Statuses $status)
     {
-        try {
-            $status->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard("api")->check()) {
+            if (Auth::guard("api")->user()->hasRole("admin")) {
+                try {
+                    $status->delete();
+                    return response()->json(["message" => "Deleted"], 205);
+                } catch (Exception $exception) {
+                    return response()->json(["error" => $exception], 500);
+                }
+            } else {
+                return response()->json("Not enough permissions", 401);
+            }
+        } else {
+            return response()->json("Not authenticated", 401);
         }
     }
 }

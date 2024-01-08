@@ -29,6 +29,19 @@ Route::group(['prefix' => 'user', 'middleware' => 'api'], function() {
     Route::delete('/{id}', 'UserController@destroy')->name('user.destroy');
     Route::get('/search', 'UserController@search')->name('user.search');
 });
+//Todos os tickets do user loggado
+Route::get('/userTickets', 'TicketsController@userTickets')->middleware('auth:api')->name('tickets.userTickets');
+//Search tickets por nome
+Route::get('/tickets/search', 'TicketsController@search')->middleware('auth:api')->name('tickets.search');
+Route::post('/tickets', 'TicketsController@store')->middleware('auth:api')->name('tickets.store');
+
+Route::group(['prefix' => '/tickets'], function() {
+    Route::get('/', 'TicketsController@index')->middleware('auth:api')->name('tickets.index');
+    Route::get('/{ticket}', 'TicketsController@show')->middleware('auth:api')->name('tickets.show');
+    Route::put('/{ticket}', 'TicketsController@update')->middleware('auth:api')->name('tickets.update');
+    Route::delete('/{ticket}', 'TicketsController@destroy')->middleware('auth:api')->name('tickets.destroy');
+
+});
 
 
 Route::apiResource( 'tickets', 'TicketsController' );
