@@ -41,10 +41,6 @@ class AuthenticationController extends Controller
 
 
     public function checkAuth(Request $request){
-
-        $bearerToken = $request->cookie('Bearer');
-        $request->headers->set('Authorization', 'Bearer ' . $bearerToken);
-
         try {
             if(Auth::guard('api')->check()){
                 return response()->json(['auth' => true], 200);
