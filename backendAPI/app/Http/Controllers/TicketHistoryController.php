@@ -23,6 +23,7 @@ class TicketHistoryController extends Controller
     }
 
 
+
     /**
      * Store a newly created resource in storage.
      *
@@ -52,6 +53,18 @@ class TicketHistoryController extends Controller
         } catch (Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\TicketHistory  $ticketHistory
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(TicketHistory $ticketHistory)
+    {
+        //
+
     }
 
     /**
