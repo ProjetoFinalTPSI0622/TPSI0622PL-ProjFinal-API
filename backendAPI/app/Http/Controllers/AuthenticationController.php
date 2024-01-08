@@ -24,7 +24,7 @@ class AuthenticationController extends Controller
 
                 try {
                     $token = $user->createToken('authToken')->accessToken;
-                    $cookie = Cookie::make('token', $token, 60, '/', null, false, true);
+                    $cookie = Cookie::make('Bearer', $token, 60, '/', null, false, true);
                 } catch (Exception $e) {
                     return response()->json($e, 500);
                 }
@@ -41,12 +41,16 @@ class AuthenticationController extends Controller
 
 
     public function checkAuth(Request $request){
+
+        $bearerToken = $request->cookie('Bearer');
+        $request->headers->set('Authorization', 'Bearer ' . $bearerToken);
+
         try {
             if(Auth::guard('api')->check()){
-                return response()->json(['auth' => true], 200);
+                return response()->json(['auth' => $request->cookie()], 200);
             }
             else {
-                return response()->json(['auth' => false], 200);
+                return response()->json(['auth' => $request], 200);
             }
         }
         catch (Exception $e) {

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group([ 'prefix' => 'auth' ], function () {
-    Route::put( '/login', 'AuthenticationController@userLogin' )->name( 'auth.login' );
+    Route::post( '/login', 'AuthenticationController@userLogin' )->name( 'auth.login' );
     Route::get( '/check', 'AuthenticationController@checkAuth' )->name( 'auth.check' );
     //Route::post( '/logout', 'AuthenticationController@logout' )->name( 'auth.logout' ); not implemented yet
 } );
