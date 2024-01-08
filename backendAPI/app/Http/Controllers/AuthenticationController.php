@@ -28,7 +28,7 @@ class AuthenticationController extends Controller
                 } catch (Exception $e) {
                     return response()->json($e, 500);
                 }
-                return response()->json(['message' => 'Login Successful'], 200)->cookie($cookie)->header('Access-Control-Allow-Origin', true);
+                return response()->json(['message' => 'Login Successful'], 200)->cookie($cookie);
 
             } else {
                 return response()->json(['error' => 'Unauthorised'], 401);
@@ -47,10 +47,10 @@ class AuthenticationController extends Controller
 
         try {
             if(Auth::guard('api')->check()){
-                return response()->json(['auth' => $request->cookie()], 200);
+                return response()->json(['auth' => true], 200);
             }
             else {
-                return response()->json(['auth' => $request], 200);
+                return response()->json(['auth' => false], 200);
             }
         }
         catch (Exception $e) {
