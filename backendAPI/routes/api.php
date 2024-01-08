@@ -21,15 +21,15 @@ Route::group([ 'prefix' => 'auth' ], function () {
 } );
 
 
-Route::post('/user', 'UserController@store')->name('user.store');
 
-Route::group(['prefix' => 'user'], function() {
-    Route::get('/', 'UserController@index')->middleware('auth:api')->name('user.index');
-    Route::put('/{id}', 'UserController@update')->middleware('auth:api')->name('user.update');
-    Route::delete('/{id}', 'UserController@destroy')->middleware('auth:api')->name('user.destroy');
-    Route::get('/search', 'UserController@search')->middleware('auth:api')->name('user.search');
-
+Route::group(['prefix' => 'user', 'middleware' => 'api'], function() {
+    Route::get('/', 'UserController@index')->name('user.index');
+    Route::post('/', 'UserController@store')->name('user.store');
+    Route::put('/{id}', 'UserController@update')->name('user.update');
+    Route::delete('/{id}', 'UserController@destroy')->name('user.destroy');
+    Route::get('/search', 'UserController@search')->name('user.search');
 });
+
 
 Route::apiResource( 'tickets', 'TicketsController' );
 Route::apiResource('gender', 'GendersController');
