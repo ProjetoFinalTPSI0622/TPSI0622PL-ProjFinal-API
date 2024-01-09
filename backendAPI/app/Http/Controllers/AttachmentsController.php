@@ -14,7 +14,7 @@ class AttachmentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($ticket_id)
+    public function attachmentsTicket($ticket_id)
     {
         if (Auth::guard('api')->check()) { // Verifica se o usuário está logado
 
@@ -64,7 +64,7 @@ class AttachmentsController extends Controller
 
             try {
                 $file = $request->file('file');
-                $path = Storage::putFile('attachments', $file);
+                $path = Storage::disk('public')->put('attachments', $file);
                 $attachment = Attachments::create([
 
                     'ticket_id' => $request->ticket_id,
