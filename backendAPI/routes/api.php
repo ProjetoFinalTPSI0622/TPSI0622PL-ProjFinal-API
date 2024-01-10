@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->group(function () {
-    Route::get('/notifications', 'NotificationController@index');
-    // You can add more routes for other notification-related actions
-});
 
 Route::group([ 'prefix' => 'auth', 'middleware' => 'api' ], function () {
     Route::post( '/login', 'AuthenticationController@userLogin' )->name( 'auth.login' );
