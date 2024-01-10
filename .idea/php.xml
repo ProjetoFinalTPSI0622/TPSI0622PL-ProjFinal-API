@@ -128,9 +128,26 @@
       <path value="$PROJECT_DIR$/backendAPI/vendor/league/event" />
       <path value="$PROJECT_DIR$/backendAPI/vendor/league/uri" />
       <path value="$PROJECT_DIR$/backendAPI/vendor/phpseclib/phpseclib" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/ratchet/rfc6455" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/pusher/pusher-php-server" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/fig/http-message-util" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/evenement/evenement" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/paragonie/sodium_compat" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/http" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/event-loop" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/dns" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/cache" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/stream" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/socket" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/react/promise" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/beyondcode/laravel-websockets" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/ringcentral/psr7" />
+      <path value="$PROJECT_DIR$/backendAPI/vendor/cboden/ratchet" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>
