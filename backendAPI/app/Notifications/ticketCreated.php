@@ -12,18 +12,16 @@ class ticketCreated extends Notification
 {
     use Queueable;
 
-    public $ticket;
-
-
+    public $ticket_id;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($ticket)
+    public function __construct($ticket_id)
     {
-        $this->ticket = $ticket;
+        $this->ticket = $ticket_id;
 
     }
 

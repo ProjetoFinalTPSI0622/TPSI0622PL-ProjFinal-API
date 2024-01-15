@@ -53,5 +53,10 @@ class User extends Authenticatable
         return $this->hasMany(UserSavedResponses::class);
     }
 
+    public function createdTicket()
+    {
+        return $this->hasMany(Tickets::class, 'createdby');
+    }
+
 
 }

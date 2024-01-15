@@ -75,7 +75,7 @@ class TicketsController extends Controller
                 try {
                     $validatedData = $request->validateWithBag('store', [
                         'createdby' => 'required|exists:users,id',
-                        'assignedto' => 'required|exists:users,id',
+                        'assignedto' => 'exists:users,id',
                         'title' => 'required|string|max:255',
                         'description' => 'required|string|max:1000',
                         'status' => 'required|exists:statuses,id',
