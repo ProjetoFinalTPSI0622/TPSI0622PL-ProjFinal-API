@@ -18,7 +18,7 @@ class Tickets extends Model
         'category',
     ];
 
-    public function createdByUser()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'createdby');
     }

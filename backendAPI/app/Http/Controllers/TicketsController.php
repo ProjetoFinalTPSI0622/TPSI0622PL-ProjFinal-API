@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewTicketCreated;
+use App\Notifications\ticketCreated;
 use App\Tickets;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -73,7 +75,7 @@ class TicketsController extends Controller
                 try {
                     $validatedData = $request->validateWithBag('store', [
                         'createdby' => 'required|exists:users,id',
-                        'assignedto' => 'required|exists:users,id',
+                        'assignedto' => 'exists:users,id',
                         'title' => 'required|string|max:255',
                         'description' => 'required|string|max:1000',
                         'status' => 'required|exists:statuses,id',
@@ -81,6 +83,11 @@ class TicketsController extends Controller
                         'category' => 'required|exists:categories,id',
                     ]);
                     $ticket = Tickets::create($validatedData);
+
+                    \Log::info('Disparando evento NewTicketCreated', ['ticket' => $ticket]);
+
+                    event(new NewTicketCreated($ticket));
+
                     return response()->json($ticket, 201);
                 } catch (ValidationException $e) {
                     $errors = $e->errors();
