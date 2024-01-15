@@ -13,15 +13,14 @@ use App\Tickets;
 class SendTicketNotification
 {
 
-    public int $ticket_id;
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct(int $id)
+    public function __construct()
     {
-        //this->ticket_id = $id;
+
     }
 
     /**
@@ -32,15 +31,19 @@ class SendTicketNotification
      */
     public function handle(NewTicketCreated $event)
     {
+        //guardar notificaçao na base de dados
+        //ver o user que criou o ticket e ao admin
+        //enviar notificacao
+        //passar o id que acabou de ser inserido na bd da notificação
 
-        // Aqui, você pode definir a lógica para determinar os destinatários da notificação
 
-        // Por exemplo, você pode querer enviar para o usuário designado ou um grupo de usuários
-        $ticket = Tickets::with('createdBy')->find($event->ticket_id);
-        $user = $ticket->createdBy;
-        //dd($ticket);
-        //dd($user);
-           // \Log::alert(Notification::send($user, new TicketCreated($event->ticket_id)));
-        $user->notify(new ticketCreated($event->ticket_id));
+        //dd($event->ticket);
+        $users = User::All();
+        //dd($users);
+        foreach ($users as $user) {
+            if ($user->hasRole('admin')) {
+                $user->notify(new ticketCreated($event->ticket));
+            }
+        }
     }
 }

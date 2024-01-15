@@ -3,12 +3,13 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Tickets;
+use App\Tickets;
 
-class ticketCreated extends Notification
+class ticketCreated extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -33,7 +34,7 @@ class ticketCreated extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['database','broadcast'];
     }
 
     /**
@@ -57,6 +58,15 @@ class ticketCreated extends Notification
      * @return array
      */
     public function toDatabase($notifiable)
+    {
+        return [
+            'ticket_id' => $this->ticket->id,
+            'title' => 'New Ticket Created',
+            'message' => 'A new ticket has been created: ' . $this->ticket->title // Assuming 'title' is a field in your Ticket model
+        ];
+    }
+
+    public function toBroadcast($notifiable)
     {
         return [
             'ticket_id' => $this->ticket->id,

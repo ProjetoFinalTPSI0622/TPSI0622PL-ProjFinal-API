@@ -9,8 +9,9 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Tickets;
-class NewTicketCreated implements ShouldBroadcast
+use App\Tickets;
+
+class NewTicketCreated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -20,12 +21,10 @@ class NewTicketCreated implements ShouldBroadcast
      * @return void
      */
 
-    public int $ticket_id;
-    public string $message;
-    public function __construct($id, $message)
+    public $ticket;
+    public function __construct(Tickets $ticket)
     {
-        $this->ticket_id = $id;
-        $this->message = $message;
+        $this->ticket = $ticket;
         //$this->dontBroadcastToCurrentUser();
     }
 
@@ -35,22 +34,6 @@ class NewTicketCreated implements ShouldBroadcast
      *
      * @return \Illuminate\Broadcasting\Channel|array
      */
-    public function broadcastOn() : Channel
-    {
-        return new Channel('tickets');
-    }
 
-    public function broadcastAs()
-    {
-        return 'ticket.created';
-    }
-
-    public function broadcastWith()
-    {
-        //dd($this->ticket_id, $this->message);
-        return [
-            'ticket_id' => $this->ticket_id,
-            'message' => $this->message];
-    }
 
 }

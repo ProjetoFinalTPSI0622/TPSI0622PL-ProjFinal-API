@@ -86,7 +86,7 @@ class TicketsController extends Controller
 
                     \Log::info('Disparando evento NewTicketCreated', ['ticket' => $ticket]);
 
-                    event(new NewTicketCreated($ticket->id,"New Ticket Created"));
+                    event(new NewTicketCreated($ticket));
 
                     return response()->json($ticket, 201);
                 } catch (ValidationException $e) {
