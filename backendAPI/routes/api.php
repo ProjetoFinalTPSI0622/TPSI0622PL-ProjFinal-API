@@ -36,11 +36,11 @@ Route::get('/userTickets', 'TicketsController@userTickets')->middleware('auth:ap
 Route::get('/tickets/search', 'TicketsController@search')->middleware('auth:api')->name('tickets.search');
 Route::post('/tickets', 'TicketsController@store')->middleware('auth:api')->name('tickets.store');
 
-Route::group(['prefix' => '/tickets'], function() {
-    Route::get('/', 'TicketsController@index')->middleware('auth:api')->name('tickets.index');
-    Route::get('/{ticket}', 'TicketsController@show')->middleware('auth:api')->name('tickets.show');
-    Route::put('/{ticket}', 'TicketsController@update')->middleware('auth:api')->name('tickets.update');
-    Route::delete('/{ticket}', 'TicketsController@destroy')->middleware('auth:api')->name('tickets.destroy');
+Route::group(['prefix' => '/tickets', 'middleware' => 'api'], function() {
+    Route::get('/', 'TicketsController@index')->name('tickets.index');
+    Route::get('/{ticket}', 'TicketsController@show')->name('tickets.show');
+    Route::put('/{ticket}', 'TicketsController@update')->name('tickets.update');
+    Route::delete('/{ticket}', 'TicketsController@destroy')->name('tickets.destroy');
 
 });
 
