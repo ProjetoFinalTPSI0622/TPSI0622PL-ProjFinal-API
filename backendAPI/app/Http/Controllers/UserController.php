@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
+use App\Events\NewUserEvent;
 
 
 class UserController extends Controller
@@ -53,8 +54,8 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //if(Auth::guard('api')->check()){ // Check if user is logged in
-            //if(Auth::guard('api')->user()->hasRole('admin')){ // Check if user is admin
+        if(Auth::guard('api')->check()){ // Check if user is logged in
+            if(Auth::guard('api')->user()->hasRole('admin')){ // Check if user is admin
                 try {
 
                     $validatedData = $request->validate([
@@ -76,19 +77,21 @@ class UserController extends Controller
                     $user = User::create($validatedData);
                     $user->roles()->attach($role);
 
+                    event(new NewUserEvent($user));
+
                     return response()->json($user, 201);
                 }
                 catch (Exception $e) {
                     return response()->json($e, 500);
                 }
-            //}
-            /*else {
+            }
+            else {
                 return response()->json("Not authorized", 401);
             }
         }
         else {
             return response()->json("Not logged in", 401);
-        }*/
+        }
     }
 
     /**
