@@ -25,7 +25,10 @@ class TicketsController extends Controller
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
                 try {
                     // Retrieve all users
-                    $tickets = Tickets::all();
+                    //$tickets = Tickets::all();
+
+                    $tickets = Tickets::with('createdby', 'assignedTo', 'status', 'category', 'priority' )->get();
+
 
                     // Return the list of users
                     return response()->json($tickets, 200);
@@ -86,7 +89,7 @@ class TicketsController extends Controller
 
                     \Log::info('Disparando evento NewTicketCreated', ['ticket' => $ticket]);
 
-                    event(new NewTicketCreated($ticket));
+                    //event(new NewTicketCreated($ticket));
 
                     return response()->json($ticket, 201);
                 } catch (ValidationException $e) {
