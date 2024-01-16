@@ -9,7 +9,8 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Tickets;
 
-class ticketCreated extends Notification implements ShouldBroadcast
+
+class TicketUpdateNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
@@ -20,9 +21,9 @@ class ticketCreated extends Notification implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($ticket_id)
+    public function __construct(Tickets $ticket)
     {
-        $this->ticket = $ticket_id;
+        $this->ticket = $ticket;
     }
 
     /**
@@ -33,7 +34,7 @@ class ticketCreated extends Notification implements ShouldBroadcast
      */
     public function via($notifiable)
     {
-        return ['database','broadcast'];
+        return ['broadcast','database'];
     }
 
     /**
@@ -42,7 +43,7 @@ class ticketCreated extends Notification implements ShouldBroadcast
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-   /* public function toMail($notifiable)
+    /*public function toMail($notifiable)
     {
         return (new MailMessage)
                     ->line('The introduction to the notification.')
@@ -59,28 +60,17 @@ class ticketCreated extends Notification implements ShouldBroadcast
     public function toDatabase($notifiable)
     {
         return [
-            'ticket_id' => $this->ticket->id,
-            'title' => 'New Ticket Created',
-            'message' => 'A new ticket has been created: ' . $this->ticket->title // Assuming 'title' is a field in your Ticket model
-        ];
+                'ticket' => $this->ticket,
+                'data' => 'Ticket Updated'
+
+            ];
     }
 
     public function toBroadcast($notifiable)
     {
         return [
-            'ticket_id' => $this->ticket->id,
-            'title' => 'New Ticket Created',
-            'message' => 'A new ticket has been created: ' . $this->ticket->title // Assuming 'title' is a field in your Ticket model
-        ];
+            'ticket' => $this->ticket,
+            'data' => 'Ticket Updated'
+            ];
     }
-
-    /*
-    public function toMail($notifiable)
-    {
-        return (new MailMessage)
-            ->line('A new ticket has been created.')
-            ->action('View Ticket', url('/tickets/' . $this->ticket->id))
-            ->line('Thank you for using our application!');
-    }
-    */
 }

@@ -25,7 +25,7 @@ Route::group([ 'prefix' => 'auth', 'middleware' => 'api' ], function () {
 
 Route::group(['prefix' => 'user', 'middleware' => 'api'], function() {
     Route::get('/', 'UserController@index')->name('user.index');
-    Route::post('/', 'UserController@store')->name('user.store');
+    Route::post('/users', 'UserController@store')->name('user.store');
     Route::put('/{id}', 'UserController@update')->name('user.update');
     Route::delete('/{id}', 'UserController@destroy')->name('user.destroy');
     Route::get('/search', 'UserController@search')->name('user.search');

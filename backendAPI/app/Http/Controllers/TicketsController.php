@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewTicketCreated;
+use App\Events\TicketUpdateEvent;
 use App\Notifications\ticketCreated;
 use App\Tickets;
 use Exception;
@@ -155,7 +156,13 @@ class TicketsController extends Controller
                         'priority' => 'required|exists:priorities,id',
                         'category' => 'required|exists:categories,id',
                     ]);
+                    $originalStatus = $ticket->status;
                     $ticket->update($validatedData);
+
+                    if ($originalStatus != $ticket->status) {
+                        event(new TicketUpdateEvent($ticket));
+                    }
+
                     return response()->json($ticket, 200);
                 } catch (Exception $e) {
                     // Handle exceptions if any
