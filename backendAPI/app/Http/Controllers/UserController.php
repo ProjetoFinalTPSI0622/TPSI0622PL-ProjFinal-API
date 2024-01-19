@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserStoreRequest;
 use App\User;
 use App\Roles;
 use Exception;
@@ -52,20 +53,13 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        if(Auth::guard('api')->check()){ // Check if user is logged in
-            if(Auth::guard('api')->user()->hasRole('admin')){ // Check if user is admin
+        //dd($request->validated());
                 try {
 
-                    $validatedData = $request->validate([
-                        'name' => 'required|max:255',
-                        'email' => 'required|unique:users|max:255',
-                        'password' => 'required|max:255',
-                        'internalcode' => 'required|max:255',
-                    ]);
 
-                    $validatedData['password'] = Hash::make($validatedData['password']);
+
 
                     if($request->has('role')){
                         $role = Roles::where('role', $request->get('role'))->first();
@@ -74,7 +68,7 @@ class UserController extends Controller
                         $role = Roles::where('role', 'user')->first();
                     }
 
-                    $user = User::create($validatedData);
+                    $user = User::create($request->validated());
                     $user->roles()->attach($role);
 
                     event(new NewUserEvent($user));
@@ -82,7 +76,7 @@ class UserController extends Controller
                     return response()->json($user, 201);
                 }
                 catch (Exception $e) {
-                    return response()->json($e, 500);
+                    return response()->json($e->getMessage());
                 }
             }
             else {
