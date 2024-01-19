@@ -14,7 +14,7 @@ class TicketCreateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return Auth::guard('api')->check();
     }
 
     /**
@@ -25,8 +25,6 @@ class TicketCreateRequest extends FormRequest
     public function rules()
     {
         return [
-            //
-                'createdby' => 'required|exists:users,id',
                 'title' => 'required|string|max:255',
                 'description' => 'required|string|max:1000',
                 'priority' => 'required|exists:priorities,id',
@@ -37,8 +35,6 @@ class TicketCreateRequest extends FormRequest
     public function messages()
     {
         return [
-            'createdby.required' => 'A createdby user is required',
-            'createdby.exists' => 'A createdby user is required',
             'title.required' => 'A title is required',
             'title.string' => 'A title must be a string',
             'title.max' => 'A title must be less than 255 characters',

@@ -77,10 +77,8 @@ class TicketsController extends Controller
     {
         try {
             $validatedData = $request->validated();
-            $validatedData['status'] = 1;
-            $validatedData['assignedto'] = null;
             $ticket = new Tickets([
-                'createdby' => $validatedData['createdby'],
+                'createdby' => Auth::guard('api')->user()->id,
                 'assignedto' => null,
                 'title' => $validatedData['title'],
                 'description' => $validatedData['description'],
