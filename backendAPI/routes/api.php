@@ -22,7 +22,7 @@ Route::group([ 'prefix' => 'auth', 'middleware' => 'api' ], function () {
 } );
 
 
-
+// -----------------------------------------------------------------USER ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'users', 'middleware' => 'api'], function() {
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@store');
@@ -32,7 +32,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'api'], function() {
 });
 
 
-
+// -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'tickets', 'middleware' => 'api'], function() {
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
@@ -43,13 +43,27 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'api'], function() {
     Route::get('/tickets/search', 'TicketsController@search');
 });
 
+// -----------------------------------------------------------------PRIORITY ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'priorities', 'middleware' => 'api'], function() {
+    Route::get('/', 'PrioritiesController@index');
+    Route::post('/', 'PrioritiesController@store');
+    Route::delete('/{id}', 'PrioritiesController@destroy');
+});
+
+// -----------------------------------------------------------------CATEGORY ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'categories', 'middleware' => 'api'], function() {
+    Route::get('/', 'CategoriesController@index');
+    Route::post('/', 'CategoriesController@store');
+    Route::delete('/{id}', 'CategoriesController@destroy');
+});
+
+
+//TODO: dont use apiResource and make route groups instead
 
 Route::apiResource('gender', 'GendersController');
 Route::apiResource('country', 'CountriesController');
 Route::apiResource('attachment', 'AttachmentsController');
 Route::apiResource('status', 'StatusesController');
-Route::apiResource('priority', 'PrioritiesController');
-Route::apiResource('category', 'CategoriesController');
 Route::apiResource('commentType', 'CommentTypesController');
 Route::apiResource('role', 'RolesController');
 
