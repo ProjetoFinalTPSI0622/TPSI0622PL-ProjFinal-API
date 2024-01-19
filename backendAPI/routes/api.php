@@ -29,6 +29,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'api'], function() {
     Route::put('/{id}', 'UserController@update');
     Route::delete('/{id}', 'UserController@destroy');
     Route::get('/search', 'UserController@search');
+    Route::get('/authed' , 'UserController@getAuthedUser');
 });
 
 

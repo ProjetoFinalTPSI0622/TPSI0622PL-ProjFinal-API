@@ -55,11 +55,7 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        //dd($request->validated());
                 try {
-
-
-
 
                     if($request->has('role')){
                         $role = Roles::where('role', $request->get('role'))->first();
@@ -78,14 +74,6 @@ class UserController extends Controller
                 catch (Exception $e) {
                     return response()->json($e->getMessage());
                 }
-            }
-            else {
-                return response()->json("Not authorized", 401);
-            }
-        }
-        else {
-            return response()->json("Not logged in", 401);
-        }
     }
 
     /**
@@ -190,6 +178,22 @@ class UserController extends Controller
             }
             else {
                 return response()->json("Not authorized", 401);
+            }
+        }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+    }
+
+    public function getAuthedUser()
+    {
+        if(Auth::guard('api')->check()){ // Check if user is logged in
+            try {
+                $user = Auth::guard('api')->user();
+                return response()->json($user, 200);
+            }
+            catch (Exception $e) {
+                return response()->json($e, 500);
             }
         }
         else {
