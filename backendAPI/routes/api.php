@@ -55,4 +55,6 @@ Route::apiResource('category', 'CategoriesController');
 Route::apiResource('commentType', 'CommentTypesController');
 Route::apiResource('role', 'RolesController');
 
+Route::apiResource('userInfo', 'UserInfoController');
+
 Route::get('/attachment/attachmentsTicket/{ticket_id}', 'AttachmentsController@attachmentsTicket')->name('attachment.ticket');
