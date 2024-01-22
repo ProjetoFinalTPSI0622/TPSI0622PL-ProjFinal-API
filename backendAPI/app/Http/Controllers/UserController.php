@@ -67,8 +67,6 @@ class UserController extends Controller
                     $user = User::create($request->validated());
                     $user->roles()->attach($role);
 
-                    event(new NewUserEvent($user));
-
                     return response()->json($user, 201);
                 }
                 catch (Exception $e) {

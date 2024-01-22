@@ -14,7 +14,7 @@ class UserStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->check();
+        return Auth::guard('api')->user()->hasRole('admin');
     }
 
     /**
@@ -27,7 +27,10 @@ class UserStoreRequest extends FormRequest
 
 
         return [
-            'name' => 'required|unique:user'
+            'name' => 'required|max:255',
+            'email' => 'required|unique:users|max:255',
+            'password' => 'required|max:255',
+            'internalcode' => 'required|max:255',
         ];
     }
 
@@ -38,12 +41,16 @@ class UserStoreRequest extends FormRequest
      */
      public function messages()
      {
-
-
-
          return [
              'name.required' => 'A name is required',
-                'name.unique'  => 'A name is unique',
+             'name.unique'  => 'A name is unique',
+             'email.required' => 'An email is required',
+             'email.unique' => 'An email must be unique',
+             'email.max' => 'An email must be less than 255 characters',
+             'password.required' => 'A password is required',
+             'password.max' => 'A password must be less than 255 characters',
+             'internalcode.required' => 'An internal code is required',
+             'internalcode.max' => 'An internal code must be less than 255 characters',
          ];
      }
 }
