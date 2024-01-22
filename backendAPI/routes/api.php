@@ -15,15 +15,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::group([ 'prefix' => 'auth', 'middleware' => 'api' ], function () {
-    Route::post( '/login', 'AuthenticationController@userLogin' )->name( 'auth.login' );
-    Route::get( '/check', 'AuthenticationController@checkAuth' )->name( 'auth.check' );
-    //Route::post( '/logout', 'AuthenticationController@logout' )->name( 'auth.logout' ); not implemented yet
-} );
+Route::post( '/auth/login', 'AuthenticationController@userLogin');
+Route::get( '/auth/check', 'AuthenticationController@checkAuth' )->middleware('checkAuth');
 
 
 // -----------------------------------------------------------------USER ROUTES-----------------------------------------------------------------
-Route::group(['prefix' => 'users', 'middleware' => 'api'], function() {
+Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@store');
     Route::put('/{id}', 'UserController@update');
@@ -34,7 +31,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'api'], function() {
 
 
 // -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
-Route::group(['prefix' => 'tickets', 'middleware' => 'api'], function() {
+Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
     Route::get('/{ticket}', 'TicketsController@show');
@@ -45,14 +42,14 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'api'], function() {
 });
 
 // -----------------------------------------------------------------PRIORITY ROUTES-----------------------------------------------------------------
-Route::group(['prefix' => 'priorities', 'middleware' => 'api'], function() {
+Route::group(['prefix' => 'priorities', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'PrioritiesController@index');
     Route::post('/', 'PrioritiesController@store');
     Route::delete('/{id}', 'PrioritiesController@destroy');
 });
 
 // -----------------------------------------------------------------CATEGORY ROUTES-----------------------------------------------------------------
-Route::group(['prefix' => 'categories', 'middleware' => 'api'], function() {
+Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'CategoriesController@index');
     Route::post('/', 'CategoriesController@store');
     Route::delete('/{id}', 'CategoriesController@destroy');

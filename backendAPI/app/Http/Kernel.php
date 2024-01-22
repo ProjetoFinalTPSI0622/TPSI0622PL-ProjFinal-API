@@ -43,7 +43,6 @@ class Kernel extends HttpKernel
             'throttle:60,1',
             'bindings',
             'setApiCookie',
-            'checkAuth',
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class,
         ],
     ];
