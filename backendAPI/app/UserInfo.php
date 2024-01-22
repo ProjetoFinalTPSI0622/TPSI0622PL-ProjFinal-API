@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class UserInfo extends Model
 {
     use SoftDeletes;
+
+    protected $primaryKey = 'user_id';
+    public $incrementing = false;
+
     protected $fillable = [
+        'user_id',
         'name',
         'normalized_name',
         'nif',
