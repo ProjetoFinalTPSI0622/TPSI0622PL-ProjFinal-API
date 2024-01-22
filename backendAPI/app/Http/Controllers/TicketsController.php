@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\NewTicketCreated;
 use App\Events\TicketUpdateEvent;
 use App\Http\Requests\TicketCreateRequest;
+use App\Http\Requests\TicketShowRequest;
 use App\Notifications\ticketCreated;
 use App\Tickets;
 use Exception;
@@ -103,26 +104,25 @@ class TicketsController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Tickets  $ticket
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function show(Tickets $ticket)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
-                try {
-                    return response()->json($ticket, 200);
-                } catch (Exception $e) {
-                    // Handle exceptions if any
-                    return response()->json($e->getMessage(), 500);
-                }
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
-            }
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+        try{
+
+            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority' );
+        } catch (Exception $e) {
+
+            return response()->json($e->getMessage(), 500);
         }
+
+        try {
+            return response()->json($ticket, 200);
+        } catch (Exception $e) {
+            // Handle exceptions if any
+            return response()->json($e->getMessage(), 500);
+        }
+
     }
 
     /**
