@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewTicketCreated;
 use App\Events\TicketUpdateEvent;
+use App\Http\Requests\TicketCreateRequest;
 use App\Notifications\ticketCreated;
 use App\Tickets;
 use Exception;
@@ -28,7 +29,7 @@ class TicketsController extends Controller
                     // Retrieve all users
                     //$tickets = Tickets::all();
 
-                    $tickets = Tickets::with('createdby', 'assignedTo', 'status', 'category', 'priority' )->get();
+                    $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority' )->get();
 
 
                     // Return the list of users
@@ -70,42 +71,31 @@ class TicketsController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(TicketCreateRequest $request)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
-                try {
-                    $validatedData = $request->validateWithBag('store', [
-                        'createdby' => 'required|exists:users,id',
-                        'assignedto' => 'exists:users,id',
-                        'title' => 'required|string|max:255',
-                        'description' => 'required|string|max:1000',
-                        'status' => 'required|exists:statuses,id',
-                        'priority' => 'required|exists:priorities,id',
-                        'category' => 'required|exists:categories,id',
-                    ]);
-                    $ticket = Tickets::create($validatedData);
-
-                    \Log::info('Disparando evento NewTicketCreated', ['ticket' => $ticket]);
-
-                    //event(new NewTicketCreated($ticket));
-
-                    return response()->json($ticket, 201);
-                } catch (ValidationException $e) {
-                    $errors = $e->errors();
-                    return response()->json(['errors' => $errors], 422);
-                } catch (\Exception $e) {
-                    return response()->json($e->getMessage(), 500);
-                }
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
+        try {
+            $validatedData = $request->validated();
+            $ticket = new Tickets([
+                'createdby' => Auth::guard('api')->user()->id,
+                'assignedto' => null,
+                'title' => $validatedData['title'],
+                'description' => $validatedData['description'],
+                'status' => 1,
+                'priority' => $validatedData['priority'],
+                'category' => $validatedData['category'],
+            ]);
+            try{
+                $ticket->save();
+            } catch (Exception $e) {
+                // Handle exceptions if any
+                return response()->json($e->getMessage(), 500);
             }
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json($ticket, 201);
+        } catch (Exception $e) {
+            // Handle exceptions if any
+            return response()->json($e->getMessage(), 500);
         }
     }
 
