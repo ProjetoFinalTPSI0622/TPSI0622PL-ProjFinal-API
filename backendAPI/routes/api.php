@@ -22,36 +22,49 @@ Route::group([ 'prefix' => 'auth', 'middleware' => 'api' ], function () {
 } );
 
 
-
-Route::group(['prefix' => 'user', 'middleware' => 'api'], function() {
-    Route::get('/', 'UserController@index')->name('user.index');
-    Route::post('/users', 'UserController@store')->name('user.store');
-    Route::put('/{id}', 'UserController@update')->name('user.update');
-    Route::delete('/{id}', 'UserController@destroy')->name('user.destroy');
-    Route::get('/search', 'UserController@search')->name('user.search');
-});
-//Todos os tickets do user loggado
-Route::get('/userTickets', 'TicketsController@userTickets')->middleware('auth:api')->name('tickets.userTickets');
-//Search tickets por nome
-Route::get('/tickets/search', 'TicketsController@search')->middleware('auth:api')->name('tickets.search');
-Route::post('/tickets', 'TicketsController@store')->middleware('auth:api')->name('tickets.store');
-
-Route::group(['prefix' => '/tickets', 'middleware' => 'api'], function() {
-    Route::get('/', 'TicketsController@index')->name('tickets.index');
-    Route::get('/{ticket}', 'TicketsController@show')->name('tickets.show');
-    Route::put('/{ticket}', 'TicketsController@update')->name('tickets.update');
-    Route::delete('/{ticket}', 'TicketsController@destroy')->name('tickets.destroy');
-
+// -----------------------------------------------------------------USER ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'users', 'middleware' => 'api'], function() {
+    Route::get('/', 'UserController@index');
+    Route::post('/', 'UserController@store');
+    Route::put('/{id}', 'UserController@update');
+    Route::delete('/{id}', 'UserController@destroy');
+    Route::get('/search', 'UserController@search');
+    Route::get('/authed' , 'UserController@getAuthedUser');
 });
 
 
-Route::apiResource( 'tickets', 'TicketsController' );
+// -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'tickets', 'middleware' => 'api'], function() {
+    Route::get('/', 'TicketsController@index');
+    Route::post ('/', 'TicketsController@store');
+    Route::get('/{ticket}', 'TicketsController@show');
+    Route::put('/{ticket}', 'TicketsController@update');
+    Route::delete('/{ticket}', 'TicketsController@destroy');
+    Route::get('user/{user_id}', 'TicketsController@userTickets');
+    Route::get('/tickets/search', 'TicketsController@search');
+});
+
+// -----------------------------------------------------------------PRIORITY ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'priorities', 'middleware' => 'api'], function() {
+    Route::get('/', 'PrioritiesController@index');
+    Route::post('/', 'PrioritiesController@store');
+    Route::delete('/{id}', 'PrioritiesController@destroy');
+});
+
+// -----------------------------------------------------------------CATEGORY ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'categories', 'middleware' => 'api'], function() {
+    Route::get('/', 'CategoriesController@index');
+    Route::post('/', 'CategoriesController@store');
+    Route::delete('/{id}', 'CategoriesController@destroy');
+});
+
+
+//TODO: dont use apiResource and make route groups instead
+
 Route::apiResource('gender', 'GendersController');
 Route::apiResource('country', 'CountriesController');
 Route::apiResource('attachment', 'AttachmentsController');
 Route::apiResource('status', 'StatusesController');
-Route::apiResource('priority', 'PrioritiesController');
-Route::apiResource('category', 'CategoriesController');
 Route::apiResource('commentType', 'CommentTypesController');
 Route::apiResource('role', 'RolesController');
 
