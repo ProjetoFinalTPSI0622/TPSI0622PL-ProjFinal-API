@@ -136,26 +136,6 @@ class UserController extends Controller
     }
 
     /**
-     * get Authenticated User
-     *
-     */
-    public function getAuthenticatedUser()
-    {
-        if(Auth::guard('api')->check()){ // Check if user is logged in
-            try {
-                $user = Auth::user();
-                return response()->json($user, 200);
-            }
-            catch (Exception $e) {
-                return response()->json($e, 500);
-            }
-        }
-        else {
-            return response()->json("Not logged in", 401);
-        }
-    }
-
-    /**
     * get user by ID
     *
     */
@@ -197,6 +177,21 @@ class UserController extends Controller
         else {
             return response()->json("Not logged in", 401);
         }
+    }
+
+
+    public function getTechnicians()
+    {
+        try {
+            $techncians = User::whereHas('roles', function($q){
+                $q->where('role', 'technician');
+            })->get();
+            return response()->json($techncians, 200);
+        }
+        catch (Exception $e) {
+            return response()->json($e, 500);
+        }
+
     }
 
 }

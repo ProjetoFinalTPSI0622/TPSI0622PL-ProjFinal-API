@@ -27,6 +27,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
     Route::delete('/{id}', 'UserController@destroy');
     Route::get('/search', 'UserController@search');
     Route::get('/authed' , 'UserController@getAuthedUser');
+    Route::get('/technicians', 'UserController@getTechnicians');
 });
 
 
