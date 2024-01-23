@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Events\NewUserEvent;
+use Illuminate\Support\Facades\Storage;
 
 
 class UserController extends Controller
@@ -29,7 +30,13 @@ class UserController extends Controller
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
                 try {
                     // Retrieve all users
-                    $users = User::all();
+                    $users = User::with('userInfo')->get();
+
+                    $users->each(function ($user) {
+
+                        $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
+
+                    });
 
                     // Return the list of users
                     return response()->json($users, 200);

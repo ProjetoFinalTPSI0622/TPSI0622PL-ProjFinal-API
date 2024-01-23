@@ -58,5 +58,9 @@ class User extends Authenticatable
         return $this->hasMany(Tickets::class, 'createdby');
     }
 
+    public function userInfo()
+    {
+        return $this->hasOne(UserInfo::class, 'user_id');
+    }
 
 }
