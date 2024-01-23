@@ -17,6 +17,7 @@ class CreateUserInfosTable extends Migration
             $table->unsignedBigInteger('user_id')->primary();
             $table->string('name');
             $table->string('normalized_name');
+            $table->string('class');
             $table->integer('nif');
             $table->date('birthday_date');
             $table->foreignId('gender_id')->references('id')->on('genders')->onDelete('cascade')->onUpdate('cascade');

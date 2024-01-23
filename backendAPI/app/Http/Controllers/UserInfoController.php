@@ -64,7 +64,7 @@ class UserInfoController extends Controller
                         $file = $request->file('file');
                         $path = Storage::disk('public')->put('Users', $file);
                     } else {
-                        $path = asset('DefaultImageUsers/DefaultUser.png');
+                        $path = asset('defaultImageUsers/DefaultUser.png');
                     }
 
                     $validatedData['profile_picture_path'] = $path;
@@ -100,7 +100,7 @@ class UserInfoController extends Controller
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
 
                 try {
-                    $userInfo->profile_picture_path = Storage::url($userInfo->profile_picture_path);
+                    $userInfo->profile_picture_path = Storage::disk('public')->url($userInfo->profile_picture_path);
 
                     return response()->json($userInfo, 200);
                 } catch (Exception $exception) {
@@ -159,7 +159,7 @@ class UserInfoController extends Controller
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
 
                 try {
-                    $defaultImagePath = 'DefaultImageUsers/DefaultUser.png';
+                    $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
 
                     $fullImagePath = storage_path('app/public/' . $userInfo->profile_picture_path);
 
