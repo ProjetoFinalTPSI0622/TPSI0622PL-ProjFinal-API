@@ -23,6 +23,12 @@ class CreateUserInfosTable extends Migration
             $table->string('profile_picture_path');
             $table->integer('phone_number');
             $table->string('address');
+            $table->string('postal_code');
+            $table->string('city');
+            $table->string('district');
+
+
+
             $table->foreignId('country_id')->references('id')->on('countries')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
             $table->softDeletes();
