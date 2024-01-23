@@ -20,9 +20,9 @@ class ticketCreated extends Notification implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($ticket_id)
+    public function __construct($ticket)
     {
-        $this->ticket = $ticket_id;
+        $this->ticket = $ticket;
     }
 
     /**

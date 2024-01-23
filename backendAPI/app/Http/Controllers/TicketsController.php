@@ -88,7 +88,10 @@ class TicketsController extends Controller
                 'category' => $validatedData['category'],
             ]);
             try{
+
                 $ticket->save();
+                event(new NewTicketCreated($ticket));
+
             } catch (Exception $e) {
                 // Handle exceptions if any
                 return response()->json($e->getMessage(), 500);
