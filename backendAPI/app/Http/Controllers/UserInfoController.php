@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserInfoStoreRequest;
 use App\UserInfo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -39,51 +40,43 @@ class UserInfoController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(UserInfoStoreRequest $request)
     {
 
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
 
-                try {
+        try {
+            $validatedData = $request->validated();
 
-                    $validatedData = $request->validate([
-                        'user_id' => 'required|integer',
-                        'name' => 'required|max:255',
-                        'nif' => 'required|size:9',
-                        'birthday_date' => 'required|date',
-                        'gender_id' => 'required|integer',
-                        'phone_number' => 'required|max:13',
-                        'address' => 'required|max:255',
-                        'country_id' => 'required|integer',
-                    ]);
+            $userInfo = UserInfo::create([
+                'user_id' => 1,
+                'nif' => $validatedData['nif'],
+                'birthday_date' => $validatedData['birthday_date'],
+                'gender_id' => 1,
+                'profile_picture_path' => $validatedData['profile_picture_path'],
+                'phone_number' => $validatedData['phone_number'],
+                'address' => $validatedData['address'],
+                'postal_code' => $validatedData['postal_code'],
+                'city' => $validatedData['city'],
+                'district' => $validatedData['district'],
+                'country_id' => 1,
+            ]);
 
-                    if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                        $file = $request->file('file');
-                        $path = Storage::disk('public')->put('Users', $file);
-                    } else {
-                        $path = asset('defaultImageUsers/DefaultUser.png');
-                    }
-
-                    $validatedData['profile_picture_path'] = $path;
-                    $validatedData['normalized_name'] = Str::upper($request['name']);
-
-                    $userInfo = UserInfo::create($validatedData);
-                    return response()->json($userInfo, 201);
-
-                } catch (Exception $exception) {
-                    return response()->json(['error' => $exception], 500);
-                }
-
+            if ($request->hasFile('file') && $request->file('file')->isValid()) {
+                $file = $request->file('file');
+                $path = Storage::disk('public')->put('Users', $file);
             } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
+                $path = asset('DefaultImageUsers/DefaultUser.png');
             }
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+
+            $validatedData['profile_picture_path'] = $path;
+            $validatedData['normalized_name'] = Str::upper($request['name']);
+
+            return response()->json($userInfo, 201);
+
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 500);
         }
 
     }
