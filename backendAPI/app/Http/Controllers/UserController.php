@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserStoreRequest;
 use App\User;
 use App\Roles;
+use App\UserInfo;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -55,23 +56,29 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-                try {
+        try {
+            if ($request->has('role')) {
+                $role = Roles::where('role', $request->get('role'))->first();
+            } else {
+                $role = Roles::where('role', 'user')->first();
+            }
 
-                    if($request->has('role')){
-                        $role = Roles::where('role', $request->get('role'))->first();
-                    }
-                    else {
-                        $role = Roles::where('role', 'user')->first();
-                    }
+            $validatedData = $request->validated();
 
-                    $user = User::create($request->validated());
-                    $user->roles()->attach($role);
+            $user = User::create([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'password' => Hash::make($validatedData['password']),
+                'internalcode' => $validatedData['internalcode'],
+            ]);
 
-                    return response()->json($user, 201);
-                }
-                catch (Exception $e) {
-                    return response()->json($e->getMessage());
-                }
+            $user->roles()->attach($role);
+
+            return response()->json($user, 201);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+
     }
 
     /**

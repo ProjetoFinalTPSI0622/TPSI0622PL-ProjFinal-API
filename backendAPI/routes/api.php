@@ -30,6 +30,11 @@ Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
     Route::get('/technicians', 'UserController@getTechnicians');
 });
 
+// -----------------------------------------------------------------USER_INFO ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'userInfo', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'UserInfoController@index');
+    Route::post('/', 'UserInfoController@store');
+});
 
 // -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
