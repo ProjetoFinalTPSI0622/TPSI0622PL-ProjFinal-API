@@ -60,6 +60,9 @@ class UserInfoSeeder extends Seeder
             'district' => 'Lisboa',
             'postal_code' => '1111-111',
             'address' => 'aaa111',
+            'postal_code' => '1111-111',
+            'city' => 'aaa',
+            'district' => 'aaa',
             'country_id' => '1',
         ]);
 
