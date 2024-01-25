@@ -60,7 +60,14 @@ Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function()
     Route::post('/', 'CategoriesController@store');
     Route::delete('/{id}', 'CategoriesController@destroy');
 });
-
+// -----------------------------------------------------------------ROLES ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'roles', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'RolesController@index');
+});
+// -----------------------------------------------------------------GENDER ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'genders', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'GendersController@index');
+});
 
 //TODO: dont use apiResource and make route groups instead
 
