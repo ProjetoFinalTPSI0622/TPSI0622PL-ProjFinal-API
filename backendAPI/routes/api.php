@@ -68,6 +68,10 @@ Route::group(['prefix' => 'roles', 'middleware' => 'checkAuth'], function() {
 Route::group(['prefix' => 'genders', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'GendersController@index');
 });
+// -----------------------------------------------------------------COUNTRIES ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'countries', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'CountriesController@index');
+});
 
 //TODO: dont use apiResource and make route groups instead
 
