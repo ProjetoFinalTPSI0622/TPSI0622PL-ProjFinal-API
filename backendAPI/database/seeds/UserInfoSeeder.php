@@ -23,6 +23,9 @@ class UserInfoSeeder extends Seeder
             'profile_picture_path' => 'defaultImageUsers/DefaultUser.png',
             'phone_number' => '111111111',
             'address' => 'aaa111',
+            'city' => 'Lisboa',
+            'district' => 'Lisboa',
+            'postal_code' => '1111-111',
             'country_id' => '1',
         ]);
 
@@ -37,6 +40,9 @@ class UserInfoSeeder extends Seeder
             'profile_picture_path' => 'defaultImageUsers/DefaultUser.png',
             'phone_number' => '111111111',
             'address' => 'aaa111',
+            'city' => 'Lisboa',
+            'district' => 'Lisboa',
+            'postal_code' => '1111-111',
             'country_id' => '1',
         ]);
 
@@ -50,6 +56,9 @@ class UserInfoSeeder extends Seeder
             'gender_id' => '1',
             'profile_picture_path' => 'defaultImageUsers/DefaultUser.png',
             'phone_number' => '111111111',
+            'city' => 'Lisboa',
+            'district' => 'Lisboa',
+            'postal_code' => '1111-111',
             'address' => 'aaa111',
             'country_id' => '1',
         ]);
