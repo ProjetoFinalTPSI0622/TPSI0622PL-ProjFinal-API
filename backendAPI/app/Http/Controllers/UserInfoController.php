@@ -67,7 +67,7 @@ class UserInfoController extends Controller
                 $file = $request->file('file');
                 $path = Storage::disk('public')->put('Users', $file);
             } else {
-                $path = asset('DefaultImageUsers/DefaultUser.png');
+                $path = 'defaultImageUsers/DefaultUser.png';
             }
 
             $validatedData['profile_picture_path'] = $path;

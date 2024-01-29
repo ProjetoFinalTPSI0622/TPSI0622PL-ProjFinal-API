@@ -88,6 +88,23 @@ class UserController extends Controller
 
     }
 
+    public function show(User $user)
+    {
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            try {
+                $user->load('userInfo');
+                $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
+                return response()->json($user, 200);
+            }
+            catch (Exception $e) {
+                return response()->json($e, 500);
+            }
+        }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      *
