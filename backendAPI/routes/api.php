@@ -19,16 +19,18 @@ Route::post( '/auth/login', 'AuthenticationController@userLogin');
 Route::get( '/auth/check', 'AuthenticationController@checkAuth' )->middleware('checkAuth');
 
 
+
+
 // -----------------------------------------------------------------USER ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
+    Route::get('/authed' , 'UserController@getAuthedUser');
+    Route::get('/technicians', 'UserController@getTechnicians');
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@store');
     Route::get('/{user}', 'UserController@show');
     Route::put('/{id}', 'UserController@update');
     Route::delete('/{id}', 'UserController@destroy');
     Route::get('/search', 'UserController@search');
-    Route::get('/authed' , 'UserController@getAuthedUser');
-    Route::get('/technicians', 'UserController@getTechnicians');
 });
 
 // -----------------------------------------------------------------USER_INFO ROUTES-----------------------------------------------------------------
