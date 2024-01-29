@@ -59,4 +59,15 @@ class AuthenticationController extends Controller
             return response()->json($e, 500);
         }
     }
+
+    public function userLogout(Request $request){
+        try {
+            $user = Auth::guard('api')->user();
+            $user->tokens()->delete();
+            return response()->json(['message' => 'Logged Out'], 200);
+        }
+        catch (Exception $e) {
+            return response()->json($e, 500);
+        }
+    }
 }
