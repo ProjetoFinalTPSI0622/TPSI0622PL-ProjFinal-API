@@ -80,7 +80,7 @@ Route::apiResource('country', 'CountriesController');
 Route::apiResource('attachment', 'AttachmentsController');
 Route::apiResource('status', 'StatusesController');
 Route::apiResource('commentType', 'CommentTypesController');
-Route::apiResource('role', 'RolesController');
+//Route::apiResource('role', 'RolesController');
 
 Route::apiResource('userInfo', 'UserInfoController');
 
