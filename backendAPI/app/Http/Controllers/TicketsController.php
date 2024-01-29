@@ -90,7 +90,6 @@ class TicketsController extends Controller
             try{
 
                 $ticket->save();
-                event(new NewTicketCreated($ticket));
 
             } catch (Exception $e) {
                 // Handle exceptions if any
