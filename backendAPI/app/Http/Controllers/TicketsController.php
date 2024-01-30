@@ -3,17 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewTicketCreated;
+use App\Events\NotificationEvent;
 use App\Events\TicketUpdateEvent;
+use App\Handlers\NotificationDataHandler;
+use App\Handlers\RecipientHandler;
 use App\Http\Requests\TicketCreateRequest;
 use App\Http\Requests\TicketShowRequest;
 use App\Notifications\ticketCreated;
 use App\Tickets;
+use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+
+//TODO: delete this after
+use Illuminate\Support\Facades\Log;
+
 
 class TicketsController extends Controller
 {
@@ -78,6 +86,7 @@ class TicketsController extends Controller
     {
         try {
             $validatedData = $request->validated();
+
             $ticket = new Tickets([
                 'createdby' => Auth::guard('api')->user()->id,
                 'assignedto' => null,
@@ -90,6 +99,15 @@ class TicketsController extends Controller
             try{
 
                 $ticket->save();
+
+                try{
+                    $handler = new NotificationDataHandler();
+                    $handlerData = $handler->handleNotificationData('ticket_created', $ticket);
+
+                    event(new NotificationEvent($handlerData));
+                } catch(\Exception $e) {
+                    \Log::error($e->getMessage());
+                }
 
             } catch (Exception $e) {
                 // Handle exceptions if any

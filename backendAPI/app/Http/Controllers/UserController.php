@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GetAuthedUserRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\User;
 use App\Roles;
@@ -196,17 +197,12 @@ class UserController extends Controller
 
     public function getAuthedUser()
     {
-        if(Auth::guard('api')->check()){ // Check if user is logged in
-            try {
-                $user = Auth::guard('api')->user();
-                return response()->json($user, 200);
-            }
-            catch (Exception $e) {
-                return response()->json($e, 500);
-            }
+        try {
+            $user = Auth::guard('api')->user();
+            return response()->json($user, 200);
         }
-        else {
-            return response()->json("Not logged in", 401);
+        catch (Exception $e) {
+            return response()->json($e, 500);
         }
     }
 

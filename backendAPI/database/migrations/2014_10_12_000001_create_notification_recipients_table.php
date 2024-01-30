@@ -15,12 +15,9 @@ class CreateNotificationRecipientsTable extends Migration
     {
         Schema::create('notification_recipients', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('notification_id)');
-            $table->unsignedBigInteger('recipient_id');
+            $table->foreignId('notification_id')->constrained('notifications');
+            $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
-
-            $table->foreign('notification_id')->references('id')->on('notifications');
-            $table->foreign('recipient_id')->references('id')->on('users');
         });
     }
 

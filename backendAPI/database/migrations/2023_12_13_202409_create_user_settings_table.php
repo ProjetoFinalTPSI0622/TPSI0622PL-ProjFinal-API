@@ -15,10 +15,16 @@ class CreateUserSettingsTable extends Migration
     {
         Schema::create('user_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->enum('notification_preference', ['all', 'important', 'none'])->default('all'); //TODO: check the notificatin_preferences needed
+            $table->unsignedBigInteger('user_id');
+            $table->boolean('ticket_created');
+            $table->boolean('ticket_assigned');
+            $table->boolean('ticket_status_updated');
+            $table->boolean('ticket_priority_updated');
+            $table->boolean('ticket_commented');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
