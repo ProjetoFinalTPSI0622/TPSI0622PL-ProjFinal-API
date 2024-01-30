@@ -17,6 +17,7 @@ class CreateNotificationRecipientsTable extends Migration
             $table->id();
             $table->foreignId('notification_id')->constrained('notifications');
             $table->foreignId('user_id')->constrained('users');
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
     }
