@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserLoginRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 
 class AuthenticationController extends Controller
 {
     /**
      *  Authenticate User && Generate Token
      */
-    public function userLogin(Request $request){
+    public function userLogin(UserLoginRequest $request){
         try {
-            $credentials = $request->validate([
-                'email' => 'required|email',
-                'password' => 'required',
-            ]);
+
+            $credentials = $request->validated();
+
 
             if(Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])){
                 $user = Auth::user();
 
                 try {
-                    $token = $user->createToken('authToken')->accessToken;
+                    $token = $user->createToken('authToken')->plainTextToken;
 
                     $cookie = \Symfony\Component\HttpFoundation\Cookie::create("Bearer")
                         ->withValue($token)
@@ -55,6 +54,17 @@ class AuthenticationController extends Controller
             else {
                 return response()->json(['auth' => false], 200);
             }
+        }
+        catch (Exception $e) {
+            return response()->json($e, 500);
+        }
+    }
+
+    public function userLogout(Request $request){
+        try {
+            $user = Auth::guard('api')->user();
+            $user->tokens()->delete();
+            return response()->json(['message' => 'Logged Out'], 200);
         }
         catch (Exception $e) {
             return response()->json($e, 500);
