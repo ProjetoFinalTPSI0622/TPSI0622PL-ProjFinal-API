@@ -69,6 +69,8 @@ Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function()
 Route::group(['prefix' => 'notifications', 'middleware' => 'checkAuth'], function() {
     Route::get('/check', 'NotificationRecipientController@check');
     Route::get('/', 'NotificationRecipientController@index');
+    Route::post('/markAsSeen', 'NotificationRecipientController@markAllAsRead');
+    Route::post('/{notification}', 'NotificationRecipientController@show');
 });
 
 // -----------------------------------------------------------------ROLES ROUTES-----------------------------------------------------------------

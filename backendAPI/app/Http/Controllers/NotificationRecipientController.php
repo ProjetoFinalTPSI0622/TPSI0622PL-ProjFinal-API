@@ -59,4 +59,34 @@ class NotificationRecipientController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+
+    public function markAllAsRead()
+    {
+        $user = Auth::guard('api')->user();
+        try{
+            $notifications = NotificationRecipient::where('user_id', $user->id)->where('is_read', false)->get();
+            foreach($notifications as $notification){
+                $notification->is_read = true;
+                $notification->save();
+            }
+            return response()->json(['response' => true], 200);
+        } catch (Exception $e) {
+            // Handle exceptions if any
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function markAsRead($id)
+    {
+        $user = Auth::guard('api')->user();
+        try{
+            $notification = NotificationRecipient::where('user_id', $user->id)->where('id', $id)->first();
+            $notification->is_read = true;
+            $notification->save();
+            return response()->json(['response' => true], 200);
+        } catch (Exception $e) {
+            // Handle exceptions if any
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }
