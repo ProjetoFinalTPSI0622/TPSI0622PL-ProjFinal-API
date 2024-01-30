@@ -21,6 +21,13 @@ class NotificationRecipientController extends Controller
         try{
 
             $notifications = NotificationRecipient::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+            $notifications->load('notification');
+
+            foreach($notifications as $notification){
+                $notificationData = json_decode($notification->notification->notification_data);
+                $notification->notification->notification_data = $notificationData;
+            }
+
             return response()->json($notifications, 200);
         } catch (Exception $e) {
             // Handle exceptions if any
