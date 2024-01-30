@@ -62,6 +62,13 @@ Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function()
     Route::post('/', 'CategoriesController@store');
     Route::delete('/{id}', 'CategoriesController@destroy');
 });
+
+// -----------------------------------------------------------------NOTIFICATIONS ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'notifications', 'middleware' => 'checkAuth'], function() {
+    Route::get('/check', 'NotificationRecipientController@check');
+    Route::get('/', 'NotificationRecipientController@index');
+});
+
 // -----------------------------------------------------------------ROLES ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'roles', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'RolesController@index');
