@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewTicketCreated;
 use App\Events\NotificationEvent;
+use App\Events\TicketCreatedEvent;
 use App\Events\TicketUpdateEvent;
 use App\Handlers\NotificationDataHandler;
 use App\Handlers\RecipientHandler;
@@ -89,24 +90,21 @@ class TicketsController extends Controller
         try {
             $validatedData = $request->validated();
 
-            $ticket = new Tickets([
-                'createdby' => Auth::guard('api')->user()->id,
+            $ticket = new \App\Tickets([
+                'createdby' => 1,
                 'assignedto' => null,
-                'title' => $validatedData['title'],
-                'description' => $validatedData['description'],
+                'title' => 'Ticket Title',
+                'description' => 'Ticket Description',
                 'status' => 1,
-                'priority' => $validatedData['priority'],
-                'category' => $validatedData['category'],
+                'priority' => 1,
+                'category' => 1,
             ]);
             try{
 
                 $ticket->save();
 
                 try{
-                    $handler = new NotificationDataHandler();
-                    $handlerData = $handler->handleNotificationData('ticket_created', $ticket);
-
-                    event(new NotificationEvent($handlerData));
+                    event(new TicketCreatedEvent($ticket));
                 } catch(\Exception $e) {
                     \Log::error($e->getMessage());
                 }
@@ -233,12 +231,4 @@ class TicketsController extends Controller
         }
     }
 
-    //TODO: DELETE AFTER AND IMPLEMENT IN CONTROLLER METHODS
-    public function testSendMail()
-    {
-        $ticket = Tickets::find(1)
-            ->load('createdby', 'assignedto', 'status', 'category', 'priority' );
-        $user = 'fabiomiguel3.10@gmail.com';
-        Mail::to($user)->send(new TicketCreatedMail($ticket));
-    }
 }
