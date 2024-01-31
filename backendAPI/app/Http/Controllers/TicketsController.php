@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Events\NewTicketCreated;
 use App\Events\NotificationEvent;
+use App\Events\TicketCreatedEvent;
 use App\Events\TicketUpdateEvent;
 use App\Handlers\NotificationDataHandler;
 use App\Handlers\RecipientHandler;
 use App\Http\Requests\TicketCreateRequest;
 use App\Http\Requests\TicketShowRequest;
+use App\Mail\TicketCreatedMail;
 use App\Notifications\ticketCreated;
 use App\Tickets;
 use App\User;
@@ -17,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 //TODO: delete this after
@@ -87,24 +90,21 @@ class TicketsController extends Controller
         try {
             $validatedData = $request->validated();
 
-            $ticket = new Tickets([
-                'createdby' => Auth::guard('api')->user()->id,
+            $ticket = new \App\Tickets([
+                'createdby' => 1,
                 'assignedto' => null,
-                'title' => $validatedData['title'],
-                'description' => $validatedData['description'],
+                'title' => 'Ticket Title',
+                'description' => 'Ticket Description',
                 'status' => 1,
-                'priority' => $validatedData['priority'],
-                'category' => $validatedData['category'],
+                'priority' => 1,
+                'category' => 1,
             ]);
             try{
 
                 $ticket->save();
 
                 try{
-                    $handler = new NotificationDataHandler();
-                    $handlerData = $handler->handleNotificationData('ticket_created', $ticket);
-
-                    event(new NotificationEvent($handlerData));
+                    event(new TicketCreatedEvent($ticket));
                 } catch(\Exception $e) {
                     \Log::error($e->getMessage());
                 }
@@ -230,4 +230,5 @@ class TicketsController extends Controller
             return response()->json(['error' => $exception], 500);
         }
     }
+
 }
