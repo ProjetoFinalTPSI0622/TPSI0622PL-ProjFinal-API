@@ -9,6 +9,7 @@ use App\Handlers\NotificationDataHandler;
 use App\Handlers\RecipientHandler;
 use App\Http\Requests\TicketCreateRequest;
 use App\Http\Requests\TicketShowRequest;
+use App\Mail\TicketCreatedMail;
 use App\Notifications\ticketCreated;
 use App\Tickets;
 use App\User;
@@ -17,6 +18,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 //TODO: delete this after
@@ -229,5 +231,14 @@ class TicketsController extends Controller
         }catch (\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
+    }
+
+    //TODO: DELETE AFTER AND IMPLEMENT IN CONTROLLER METHODS
+    public function testSendMail()
+    {
+        $ticket = Tickets::find(1)
+            ->load('createdby', 'assignedto', 'status', 'category', 'priority' );
+        $user = 'fabiomiguel3.10@gmail.com';
+        Mail::to($user)->send(new TicketCreatedMail($ticket));
     }
 }
