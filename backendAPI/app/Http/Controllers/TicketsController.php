@@ -90,14 +90,14 @@ class TicketsController extends Controller
         try {
             $validatedData = $request->validated();
 
-            $ticket = new \App\Tickets([
-                'createdby' => 1,
+            $ticket = new Tickets([
+                'createdby' => Auth::guard('api')->user()->id,
                 'assignedto' => null,
-                'title' => 'Ticket Title',
-                'description' => 'Ticket Description',
+                'title' => $validatedData['title'],
+                'description' => $validatedData['description'],
                 'status' => 1,
-                'priority' => 1,
-                'category' => 1,
+                'priority' => $validatedData['priority'],
+                'category' => $validatedData['category'],
             ]);
             try{
 
