@@ -29,8 +29,8 @@ Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@store');
     Route::get('/{user}', 'UserController@show');
-    Route::put('/{id}', 'UserController@update');
-    Route::delete('/{id}', 'UserController@destroy');
+    Route::put('/{user}', 'UserController@update');
+    Route::delete('/{user}', 'UserController@destroy');
     Route::get('/search', 'UserController@search');
 });
 
@@ -38,6 +38,8 @@ Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
 Route::group(['prefix' => 'userInfo', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'UserInfoController@index');
     Route::post('/', 'UserInfoController@store');
+    Route::put('/{userInfo}', 'UserInfoController@update');
+    Route::delete('/{userInfo}', 'UserInfoController@destroy');
 });
 
 // -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
