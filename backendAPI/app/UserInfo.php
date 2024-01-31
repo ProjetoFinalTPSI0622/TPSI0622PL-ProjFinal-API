@@ -16,12 +16,16 @@ class UserInfo extends Model
         'user_id',
         'name',
         'normalized_name',
+        'class',
         'nif',
         'birthday_date',
         'gender_id',
         'profile_picture_path',
         'phone_number',
         'address',
+        'postal_code',
+        'city',
+        'district',
         'country_id'
     ];
 

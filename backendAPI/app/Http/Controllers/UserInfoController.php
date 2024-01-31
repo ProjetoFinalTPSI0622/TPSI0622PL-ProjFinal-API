@@ -132,7 +132,37 @@ class UserInfoController extends Controller
     public function update(Request $request, UserInfo $userInfo)
     {
         try {
-            $userInfo->update($request->all());
+            $validatedData = $request->validate([
+                'user_id' => 'required|integer',
+                'name' => 'required|string|max:255',
+                'class' => 'required|string',
+                'nif' => 'required|size:9',
+                'birthday_date' => 'required|date',
+                'gender_id' => 'required|integer',
+                'phone_number' => 'required|max:13',
+                'address' => 'required|max:255',
+                'postal_code' => 'required|max:8',
+                'city' => 'required|max:255',
+                'district' => 'required|max:255',
+                'country_id' => 'required|integer',
+            ]);
+
+            if ($request->hasFile('file') && $request->file('file')->isValid()) {
+                $file = $request->file('file');
+
+                $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
+                if ($userInfo->profile_picture_path != $defaultImagePath) {
+                    Storage::disk('public')->delete($userInfo->profile_picture_path);
+                }
+
+                $path = Storage::disk('public')->put('Users', $file);
+                $validatedData['profile_picture_path'] = $path;
+            }
+
+            $validatedData['normalized_name'] = Str::upper($validatedData['name'] ?? $userInfo->name);
+
+            $userInfo->update($validatedData);
+
             return response()->json($userInfo, 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception], 500);
@@ -154,9 +184,7 @@ class UserInfoController extends Controller
                 try {
                     $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
 
-                    $fullImagePath = storage_path('app/public/' . $userInfo->profile_picture_path);
-
-                    if ($userInfo->profile_picture_path != $defaultImagePath && file_exists($fullImagePath)) {
+                    if ($userInfo->profile_picture_path != $defaultImagePath && file_exists($userInfo->profile_picture_path)) {
                         Storage::disk('public')->delete($userInfo->profile_picture_path);
                     }
 
