@@ -1,5 +1,7 @@
 <?php
 
+
+
 return [
 
     /*
@@ -36,13 +38,17 @@ return [
     'mailers' => [
         'smtp' => [
             'transport' => 'smtp',
-            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
-            'port' => env('MAIL_PORT', 587),
+            'host' => env('MAIL_HOST'),
+            'port' => env('MAIL_PORT'),
             'encryption' => env('MAIL_ENCRYPTION', 'tls'),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
             'auth_mode' => null,
+            'from' => [
+                'address' => env('MAIL_FROM_ADDRESS'),
+                'name' => 'CESAEDESK'
+             ],
         ],
 
         'ses' => [

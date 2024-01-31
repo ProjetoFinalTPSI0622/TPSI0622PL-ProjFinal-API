@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Passport\HasApiTokens;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -61,6 +61,16 @@ class User extends Authenticatable
     public function userInfo()
     {
         return $this->hasOne(UserInfo::class, 'user_id');
+    }
+
+    public function notification()
+    {
+        return $this->hasMany('App\NotificationRecipient', 'recipient_id');
+    }
+
+    public function user_settings()
+    {
+        return $this->hasOne(UserSettings::class);
     }
 
 }

@@ -17,18 +17,21 @@ use Illuminate\Support\Facades\Route;
 
 Route::post( '/auth/login', 'AuthenticationController@userLogin');
 Route::get( '/auth/check', 'AuthenticationController@checkAuth' )->middleware('checkAuth');
+Route::get( '/auth/logout', 'AuthenticationController@userLogout' )->middleware('checkAuth');
+
+
 
 
 // -----------------------------------------------------------------USER ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
+    Route::get('/authed' , 'UserController@getAuthedUser');
+    Route::get('/technicians', 'UserController@getTechnicians');
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@store');
     Route::get('/{user}', 'UserController@show');
     Route::put('/{id}', 'UserController@update');
     Route::delete('/{id}', 'UserController@destroy');
     Route::get('/search', 'UserController@search');
-    Route::get('/authed' , 'UserController@getAuthedUser');
-    Route::get('/technicians', 'UserController@getTechnicians');
 });
 
 // -----------------------------------------------------------------USER_INFO ROUTES-----------------------------------------------------------------
@@ -61,6 +64,15 @@ Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function()
     Route::post('/', 'CategoriesController@store');
     Route::delete('/{id}', 'CategoriesController@destroy');
 });
+
+// -----------------------------------------------------------------NOTIFICATIONS ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'notifications', 'middleware' => 'checkAuth'], function() {
+    Route::get('/check', 'NotificationRecipientController@check');
+    Route::get('/', 'NotificationRecipientController@index');
+    Route::post('/markAsSeen', 'NotificationRecipientController@markAllAsRead');
+    Route::post('/{notification}', 'NotificationRecipientController@show');
+});
+
 // -----------------------------------------------------------------ROLES ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'roles', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'RolesController@index');
