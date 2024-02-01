@@ -16,8 +16,6 @@ class UserInfoSeeder extends Seeder
 
         DB::table('user_infos')->insert([
             'user_id' => '1',
-            'name' => 'Fabio',
-            'normalized_name' => 'FABIO',
             'class' => 'TPSI0622',
             'nif' => '111111111',
             'birthday_date' => '2001-01-01',
@@ -33,8 +31,6 @@ class UserInfoSeeder extends Seeder
 
         DB::table('user_infos')->insert([
             'user_id' => '2',
-            'name' => 'Goncalo',
-            'normalized_name' => 'GONCALO',
             'class' => 'TPSI0633',
             'nif' => '111111111',
             'birthday_date' => '2001-01-01',
@@ -50,8 +46,6 @@ class UserInfoSeeder extends Seeder
 
         DB::table('user_infos')->insert([
             'user_id' => '3',
-            'name' => 'Filipe',
-            'normalized_name' => 'FILIPE',
             'class' => 'TPSI0644',
             'nif' => '111111111',
             'birthday_date' => '2001-01-01',
@@ -67,8 +61,6 @@ class UserInfoSeeder extends Seeder
 
         DB::table('user_infos')->insert([
             'user_id' => '4',
-            'name' => 'Pedro',
-            'normalized_name' => 'PEDRO',
             'class' => 'TPSI0622',
             'nif' => '111111111',
             'birthday_date' => '2001-01-01',
@@ -84,8 +76,6 @@ class UserInfoSeeder extends Seeder
 
         DB::table('user_infos')->insert([
             'user_id' => '5',
-            'name' => 'Daniel',
-            'normalized_name' => 'DANIEL',
             'class' => 'TPSI0622',
             'nif' => '111111111',
             'birthday_date' => '2001-01-01',

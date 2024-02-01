@@ -25,6 +25,7 @@ Route::get( '/auth/logout', 'AuthenticationController@userLogout' )->middleware(
 // -----------------------------------------------------------------USER ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
     Route::get('/authed' , 'UserController@getAuthedUser');
+    Route::put('/changePassword', 'UserController@changePassword');
     Route::get('/technicians', 'UserController@getTechnicians');
     Route::get('/', 'UserController@index');
     Route::post('/', 'UserController@store');

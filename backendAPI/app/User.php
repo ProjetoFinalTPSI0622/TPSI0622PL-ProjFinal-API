@@ -45,7 +45,7 @@ class User extends Authenticatable
 
     public function hasRole($role)
     {
-        return (bool)$this->roles()->where('role', $role)->first();
+        return (bool)$this->roles()->where('name', $role)->first();
     }
 
     public function savedResponses()

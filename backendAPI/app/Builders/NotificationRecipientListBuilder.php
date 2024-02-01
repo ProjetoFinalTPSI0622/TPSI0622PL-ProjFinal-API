@@ -14,14 +14,14 @@ class NotificationRecipientListBuilder
     public function addAllAdmins(){
 
         $this->notificationRecipients = array_merge($this->notificationRecipients, User::whereHas('roles', function ($q) {
-            $q->where('role', 'admin');
+            $q->where('name', 'admin');
         })->get()->toArray());
 
     }
 
     public function addAllTechnicians(){
         $this->notificationRecipients = array_merge($this->notificationRecipients, User::whereHas('roles', function ($q) {
-            $q->where('role', 'technician');
+            $q->where('name', 'technician');
         })->get()->toArray());
     }
 
@@ -37,7 +37,7 @@ class NotificationRecipientListBuilder
 
     public function addAssignedTechnician($id){
         $this->notificationRecipients = array_merge($this->notificationRecipients, User::whereHas('roles', function ($q) {
-            $q->where('role', 'technician');
+            $q->where('name', 'technician');
         })->where('id', $id)->get()->toArray());
     }
 

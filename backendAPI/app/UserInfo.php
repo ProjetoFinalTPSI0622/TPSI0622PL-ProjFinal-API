@@ -14,7 +14,6 @@ class UserInfo extends Model
 
     protected $fillable = [
         'user_id',
-        'name',
         'normalized_name',
         'class',
         'nif',

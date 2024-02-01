@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetAuthedUserRequest;
+use App\Http\Requests\UserChangePasswordRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\User;
 use App\Roles;
@@ -33,11 +34,11 @@ class UserController extends Controller
                     // Retrieve all users
                     $users = User::with('userInfo')->get();
 
-                    $users->each(function ($user) {
-
-                        $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
-
-                    });
+//
+//                      TODO:please dont leave code that doesnt work and crash the program
+//                        $users->each(function ($user) {
+//                        $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
+//                    });
 
                     // Return the list of users
                     return response()->json($users, 200);
@@ -64,26 +65,36 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
+        if ($request->has('role')) {
+            $role = Roles::where('name', $request->get('role'))->first();
+        } else {
+            $role = Roles::where('name', 'user')->first();
+        }
+
         try {
-            if ($request->has('role')) {
-                $role = Roles::where('role', $request->get('role'))->first();
-            } else {
-                $role = Roles::where('role', 'user')->first();
-            }
 
             $validatedData = $request->validated();
 
-            $user = User::create([
-                'name' => $validatedData['name'],
-                'email' => $validatedData['email'],
-                'password' => Hash::make($validatedData['password']),
-                'internalcode' => $validatedData['internalcode'],
-            ]);
+            try{
+                $user = new User([
+                    'name' => $validatedData['name'],
+                    'email' => $validatedData['email'],
+                    'password' => Hash::make($validatedData['password']),
+                    'internalcode' => $validatedData['internalcode'],
+                ]);
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
 
+            $user->setAttribute('normalized_name', strtoupper($validatedData['name']));
+
+            $user->save();
             $user->roles()->attach($role);
 
-            return response()->json($user, 201);
+            return response()->json($user->id, 200);
+
         } catch (Exception $e) {
+
             return response()->json($e->getMessage(), 500);
         }
 
@@ -222,6 +233,29 @@ class UserController extends Controller
             return response()->json($e, 500);
         }
 
+    }
+
+    public function changePassword(UserChangePasswordRequest $request)
+    {
+            try {
+                $validatedData = $request->validated();
+                $user = Auth::guard('api')->user();
+
+                if($validatedData['currentPassword'] == $validatedData['newPassword']){
+                    return response()->json("New password cannot be the same as the current password", 401);
+                }
+
+                if(!Hash::check($validatedData['currentPassword'], $user->password)){
+                    return response()->json("Current password is incorrect", 401);
+                }
+
+                $user->setAttribute('password', Hash::make($validatedData['newPassword']));
+
+                $user->save();
+                return response()->json($user, 200);
+            } catch (Exception $e) {
+                return response()->json($e, 500);
+            }
     }
 
 }
