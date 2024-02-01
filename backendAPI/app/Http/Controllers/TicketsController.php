@@ -231,4 +231,14 @@ class TicketsController extends Controller
         }
     }
 
+    public function ticketComments(Tickets $ticket)
+    {
+        try{
+            $ticket->load('comments', 'comments.user', 'comments.user.userInfo');
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+        return response()->json($ticket, 200);
+    }
+
 }
