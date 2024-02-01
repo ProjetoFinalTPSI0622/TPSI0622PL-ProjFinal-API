@@ -61,7 +61,7 @@ class TicketCreatedEventListener
         $ticket->load('createdby');
 
         $users = User::whereHas('roles', function($q){
-            $q->where('role', 'admin');
+            $q->where('name', 'admin');
         })->get();
 
         Mail::to('fabiomiguel3.10@gmail.com')->send(new TicketCreatedMail($ticket));
