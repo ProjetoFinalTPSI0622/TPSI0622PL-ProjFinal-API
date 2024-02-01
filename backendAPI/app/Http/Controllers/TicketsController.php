@@ -113,7 +113,7 @@ class TicketsController extends Controller
                 // Handle exceptions if any
                 return response()->json($e->getMessage(), 500);
             }
-            return response()->json($ticket, 201);
+            return response()->json($ticket, 200);
         } catch (Exception $e) {
             // Handle exceptions if any
             return response()->json($e->getMessage(), 500);
