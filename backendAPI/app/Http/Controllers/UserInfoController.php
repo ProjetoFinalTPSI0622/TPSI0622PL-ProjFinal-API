@@ -81,7 +81,6 @@ class UserInfoController extends Controller
             }
 
             $validatedData['profile_picture_path'] = $path;
-            $validatedData['normalized_name'] = Str::upper($request['name']);
 
             return response()->json($userInfo, 201);
 

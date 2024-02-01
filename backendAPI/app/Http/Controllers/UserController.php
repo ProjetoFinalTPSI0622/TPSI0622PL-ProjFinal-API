@@ -226,7 +226,7 @@ class UserController extends Controller
     {
         try {
             $techncians = User::whereHas('roles', function ($q) {
-                $q->where('role', 'technician');
+                $q->where('name', 'technician');
             })->get();
             return response()->json($techncians, 200);
         } catch (Exception $e) {
