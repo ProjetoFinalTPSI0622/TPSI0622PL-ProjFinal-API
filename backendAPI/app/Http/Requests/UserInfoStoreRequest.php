@@ -16,6 +16,7 @@ class UserInfoStoreRequest extends FormRequest
         return Auth::guard('api')->user()->hasRole('admin');
     }
 
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -25,16 +26,15 @@ class UserInfoStoreRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer|exists:users,id',
-            'name' => 'required|max:255',
-            'nif' => 'required|unique|size:9',
+            'nif' => 'required|unique:user_infos|size:9',
             'birthday_date' => 'required|date',
-            'gender_id' => 'required|integer|exists:gender,id',
+            'gender' => 'required|integer|exists:genders,id',
             'phone_number' => 'required|max:13',
             'address' => 'required|max:255',
             'postal_code' => 'required|max:8',
             'city' => 'required|max:30',
             'district' => 'required|max:30',
-            'country_id' => 'required|integer|exists:countries,id',
+            'country' => 'required|integer|exists:countries,id',
         ];
     }
 

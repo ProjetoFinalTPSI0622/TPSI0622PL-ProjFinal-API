@@ -15,13 +15,15 @@ class UserSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'Fabio',
-            'email' => 'fabiomiguel3.10@gmail.com',
+            'normalized_name' => 'FABIO',
+            'email' => 'fabioTeste@hotmail.com',
             'password' => Hash::make('123456'),
             'internalcode' => 'ABC123',
         ]);
 
         DB::table('users')->insert([
             'name' => 'Goncalo',
+            'normalized_name' => 'GONCALO',
             'email' => 'goncaloTeste@hotmail.com',
             'password' => Hash::make('123456'),
             'internalcode' => 'ABC124'
@@ -29,6 +31,7 @@ class UserSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Filipe',
+            'normalized_name' => 'FILIPE',
             'email' => 'filipeTeste@hotmail.com',
             'password' => Hash::make('123456'),
             'internalcode' => 'ABC222'
@@ -36,6 +39,7 @@ class UserSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Pedro',
+            'normalized_name' => 'PEDRO',
             'email' => 'pedroTeste@hotmail.com',
             'password' => Hash::make('123456'),
             'internalcode' => 'ABC223'
@@ -43,6 +47,7 @@ class UserSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Daniel',
+            'normalized_name' => 'DANIEL',
             'email' => 'danielTeste@hotmail.com',
             'password' => Hash::make('123456'),
             'internalcode' => 'ABC333'

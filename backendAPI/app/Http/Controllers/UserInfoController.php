@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserInfoStoreRequest;
 use App\UserInfo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -44,25 +45,34 @@ class UserInfoController extends Controller
      */
     public function store(UserInfoStoreRequest $request)
     {
-
+        \Log::info($request->all());
 
         try {
             $validatedData = $request->validated();
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
 
+        try {
             $userInfo = UserInfo::create([
-                'user_id' => 1,
+                'user_id' => $validatedData['user_id'],
                 'nif' => $validatedData['nif'],
-                'birthday_date' => $validatedData['birthday_date'],
-                'gender_id' => 1,
-                'profile_picture_path' => $validatedData['profile_picture_path'],
+                'birthday_date' => Carbon::createFromFormat('d-m-Y', $validatedData['birthday_date'])->toDateString(),
+                'gender_id' => $validatedData['gender'],
+                'profile_picture_path' => $validatedData['profile_picture_path'] ?? 'defaultImageUsers/DefaultUser.png',
                 'phone_number' => $validatedData['phone_number'],
                 'address' => $validatedData['address'],
                 'postal_code' => $validatedData['postal_code'],
                 'city' => $validatedData['city'],
                 'district' => $validatedData['district'],
-                'country_id' => 1,
+                'country_id' => $validatedData['country'],
             ]);
 
+            return response()->json($userInfo, 200);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
+/*
             if ($request->hasFile('file') && $request->file('file')->isValid()) {
                 $file = $request->file('file');
                 $path = Storage::disk('public')->put('Users', $file);
@@ -77,7 +87,7 @@ class UserInfoController extends Controller
 
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 500);
-        }
+        }*/
 
     }
 
