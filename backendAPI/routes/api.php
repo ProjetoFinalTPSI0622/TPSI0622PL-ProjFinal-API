@@ -89,6 +89,13 @@ Route::group(['prefix' => 'countries', 'middleware' => 'checkAuth'], function() 
     Route::get('/', 'CountriesController@index');
 });
 
+
+// -----------------------------------------------------------------DASHBOARD ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'dashboard', 'middleware' => 'checkAuth'], function() {
+    Route::get('/ticketsPerDay', 'DashboardController@getTicketsPerDay');
+    Route::get('/getStatsByStatus', 'DashboardController@getStatsByStatus');
+});
+
 //TODO: dont use apiResource and make route groups instead
 
 Route::apiResource('gender', 'GendersController');

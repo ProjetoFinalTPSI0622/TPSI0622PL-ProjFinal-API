@@ -64,11 +64,11 @@ class TicketCreatedEventListener
             $q->where('role', 'admin');
         })->get();
 
-        Mail::to('fabiomiguel3.10@gmail.com')->send(new TicketCreatedMail($ticket));
+        /*Mail::to('fabiomiguel3.10@gmail.com')->send(new TicketCreatedMail($ticket));
 
         foreach($users as $user){
             Mail::to($user->email)->send(new TicketCreatedMail($ticket));
-        }
+        }*/
     }
 
     public function handleData($ticket): array
