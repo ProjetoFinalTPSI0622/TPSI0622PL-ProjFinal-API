@@ -9,6 +9,13 @@ class Comments extends Model
 {
     use SoftDeletes;
 
+    protected $fillable = [
+        'ticket_id',
+        'user_id',
+        'comment_type',
+        'comment_body'
+    ];
+
     public function ticket()
     {
         return $this->belongsTo(Tickets::class, 'ticket_id');
@@ -23,5 +30,6 @@ class Comments extends Model
     {
         return $this->belongsTo(CommentTypes::class, 'comment_type');
     }
+
 
 }

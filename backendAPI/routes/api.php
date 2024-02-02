@@ -45,6 +45,7 @@ Route::group(['prefix' => 'userInfo', 'middleware' => 'checkAuth'], function() {
 
 // -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
+    Route::get('{ticket}/comments', 'TicketsController@ticketComments');
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
     Route::get('/{ticket}', 'TicketsController@show');
@@ -52,6 +53,20 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::delete('/{ticket}', 'TicketsController@destroy');
     Route::get('user/{user_id}', 'TicketsController@userTickets');
     Route::get('/tickets/search', 'TicketsController@search');
+});
+
+
+// -----------------------------------------------------------------COMMENT ROUTES-----------------------------------------------------------------
+
+Route::group(['prefix' => 'comments', 'middleware' => 'checkAuth'], function() {
+    Route::post('/', 'CommentsController@store');
+    Route::delete('/{comment}', 'CommentsController@destroy');
+});
+
+// -----------------------------------------------------------------COMMENT TYPE ROUTES-----------------------------------------------------------------
+
+Route::group(['prefix' => 'commentTypes', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'CommentTypesController@index');
 });
 
 // -----------------------------------------------------------------PRIORITY ROUTES-----------------------------------------------------------------

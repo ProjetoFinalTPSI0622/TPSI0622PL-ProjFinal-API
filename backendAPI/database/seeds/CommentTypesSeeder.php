@@ -11,6 +11,11 @@ class CommentTypesSeeder extends Seeder
      */
     public function run()
     {
-        //
+        DB::table('comment_types')->insert([
+            ['name' => 'Public',],
+        ]);
+        DB::table('comment_types')->insert([
+            ['name' => 'Private',],
+        ]);
     }
 }
