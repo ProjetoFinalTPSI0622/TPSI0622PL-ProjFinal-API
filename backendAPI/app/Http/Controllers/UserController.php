@@ -104,7 +104,9 @@ class UserController extends Controller
     {
         if (Auth::guard('api')->check()) { // Check if user is logged in
             try {
-                $user->load('userInfo');
+                $user->load('userInfo', 'roles');
+                //converter data na formato d-m-Y
+                $user->userInfo->birthday_date = date('d-m-Y', strtotime($user->userInfo->birthday_date));
                 $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
                 return response()->json($user, 200);
             } catch (Exception $e) {
@@ -125,22 +127,25 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         if (Auth::guard('api')->check()) { // Check if user is logged in
-            //if(Auth::user()->hasRole('admin')){ // Check if user is admin
             try {
                 $validatedData = $request->validate([
                     'name' => 'required|max:255',
                     'email' => 'required|max:255',
                     'internalcode' => 'required|max:255',
                 ]);
+
+                $roles = Roles::query()->where('id', $request->get('role'))->get();
+
+
+                $user->roles()->sync($roles);
+                \Log::info($user);
+
                 $user->update($validatedData);
                 return response()->json($user, 200);
             } catch (Exception $e) {
                 return response()->json($e, 500);
             }
-            // }
-            //else {
-            //   return response()->json("Not authorized", 401);
-            // }
+
         } else {
             return response()->json("Not logged in", 401);
         }

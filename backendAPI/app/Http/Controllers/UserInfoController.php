@@ -141,9 +141,11 @@ class UserInfoController extends Controller
     public function update(Request $request, UserInfo $userInfo)
     {
         try {
+
+            $request->merge(['birthday_date' => Carbon::createFromFormat('d-m-Y', $request->birthday_date)->toDateString()]);
+
             $validatedData = $request->validate([
                 'user_id' => 'required|integer',
-                'name' => 'required|string|max:255',
                 'class' => 'required|string',
                 'nif' => 'required|size:9',
                 'birthday_date' => 'required|date',
@@ -167,8 +169,6 @@ class UserInfoController extends Controller
                 $path = Storage::disk('public')->put('Users', $file);
                 $validatedData['profile_picture_path'] = $path;
             }
-
-            $validatedData['normalized_name'] = Str::upper($validatedData['name'] ?? $userInfo->name);
 
             $userInfo->update($validatedData);
 
