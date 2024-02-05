@@ -17,13 +17,21 @@ class GendersController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            $genders = Genders::all();
-            return response()->json($genders, 200);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $genders = Genders::all();
+                return response()->json($genders, 200);
 
             } catch (Exception $exception) {
                 return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -44,12 +52,25 @@ class GendersController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $gender = Genders::create($request->all());
-            return response()->json($gender, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $gender = Genders::create($request->all());
+                    return response()->json($gender, 201);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -60,11 +81,19 @@ class GendersController extends Controller
      */
     public function show(Genders $gender)
     {
-        try {
-            return response()->json($gender, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                return response()->json($gender, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -87,12 +116,25 @@ class GendersController extends Controller
      */
     public function update(Request $request, Genders $gender)
     {
-        try {
-            $gender->update($request->all());
-            return response()->json($gender, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $gender->update($request->all());
+                    return response()->json($gender, 200);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 
     /**
@@ -103,11 +145,24 @@ class GendersController extends Controller
      */
     public function destroy(Genders $gender)
     {
-        try {
-            $gender->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+
+                try {
+                    $gender->delete();
+                    return response()->json(['message' => 'Deleted'], 205);
+                } catch (Exception $exception) {
+                    return response()->json(['error' => $exception], 500);
+                }
+
+            } else {
+                // Return unauthorized response if not authenticated
+                return response()->json("Not Enough Permissions", 401);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not authenticated", 401);
         }
+
     }
 }

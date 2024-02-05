@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\CommentTypes;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentTypesController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
@@ -40,12 +42,20 @@ class CommentTypesController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $commentType = CommentTypes::create($request->all());
-            return response()->json($commentType, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $commentType = CommentTypes::create($request->all());
+                return response()->json($commentType, 201);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -56,11 +66,19 @@ class CommentTypesController extends Controller
      */
     public function show(CommentTypes $commentType)
     {
-        try {
-            return response()->json($commentType, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                return response()->json($commentType, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -83,12 +101,20 @@ class CommentTypesController extends Controller
      */
     public function update(Request $request, CommentTypes $commentType)
     {
-        try {
-            $commentType->update($request->all());
-            return response()->json($commentType, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $commentType->update($request->all());
+                return response()->json($commentType, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -99,11 +125,19 @@ class CommentTypesController extends Controller
      */
     public function destroy(CommentTypes $commentType)
     {
-        try {
-            $commentType->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $commentType->delete();
+                return response()->json(['message' => 'Deleted'], 205);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 }

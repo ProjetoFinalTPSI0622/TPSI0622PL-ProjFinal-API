@@ -17,5 +17,9 @@ class DatabaseSeeder extends Seeder
         $this->call(CategoriesSeeder::class);
         $this->call(PrioritiesSeeder::class);
         $this->call(StatusesSeeder::class);
+        $this->call(GendersSeeder::class);
+        $this->call(CountriesSeeder::class);
+        $this->call(UserInfoSeeder::class);
+        $this->call(CommentTypesSeeder::class);
     }
 }

@@ -11,6 +11,14 @@ class GendersSeeder extends Seeder
      */
     public function run()
     {
-        //
+        DB::table('genders')->insert([
+            ['name' => 'Masculino',]
+        ]);
+        DB::table('genders')->insert([
+            ['name' => 'Feminino',]
+        ]);
+        DB::table('genders')->insert([
+            ['name' => 'Outro',]
+        ]);
     }
 }

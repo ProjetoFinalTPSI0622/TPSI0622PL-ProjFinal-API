@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Attachments;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AttachmentsController extends Controller
 {
@@ -12,13 +14,31 @@ class AttachmentsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function attachmentsTicket($ticket_id)
     {
-        try {
-            $attachments = Attachments::all();
-            return response()->json($attachments, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Verifica se o usuário está logado
+
+            try {
+                $attachments = Attachments::where('ticket_id', $ticket_id)->get();
+
+                $files = [];
+                foreach ($attachments as $attachment) {
+                    $files[] = [
+                        'FileName' => $attachment->FileName,
+                        'FileType' => $attachment->FileType,
+                        'FilePath' => $attachment->FilePath,
+                        'FileSize' => $attachment->FileSize,
+                        'Link' => Storage::url($attachment->FilePath),
+                    ];
+                }
+
+                return response()->json($files, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception->getMessage()], 500);
+            }
+
+        } else {
+            return response()->json("Not logged in", 401);
         }
     }
 
@@ -40,12 +60,29 @@ class AttachmentsController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $attachment = Attachments::create($request->all());
-            return response()->json($attachment, 201);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                $file = $request->file('file');
+                $path = Storage::disk('public')->put('attachments', $file);
+                $attachment = Attachments::create([
+
+                    'ticket_id' => $request->ticket_id,
+                    'FileName' => $file->getClientOriginalName(),
+                    'FilePath' => $path,
+                    'FileType' => $file->getClientMimeType(),
+                    'FileSize' => $file->getSize(),
+                ]);
+
+                return response()->json($attachment, 201);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception->getMessage()], 500);
+            }
         }
+        else {
+            return response()->json("Not logged in", 401);
+        }
+
     }
 
     /**
@@ -56,10 +93,17 @@ class AttachmentsController extends Controller
      */
     public function show(Attachments $attachment)
     {
-        try {
-            return response()->json($attachment, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                return response()->download(storage_path('app/' . $attachment->FilePath));
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
+        }
+        else {
+            return response()->json("Not logged in", 401);
         }
     }
 
@@ -83,11 +127,16 @@ class AttachmentsController extends Controller
      */
     public function update(Request $request, Attachments $attachment)
     {
-        try {
-            $attachment->update($request->all());
-            return response()->json($attachment, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+            try {
+                $attachment->update($request->all());
+                return response()->json($attachment, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+        }
+        else {
+            return response()->json("Not logged in", 401);
         }
     }
 
@@ -99,11 +148,19 @@ class AttachmentsController extends Controller
      */
     public function destroy(Attachments $attachment)
     {
-        try {
-            $attachment->delete();
-            return response()->json(['message' => 'Deleted'], 205);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) { // Check if user is logged in
+
+            try {
+                Storage::delete($attachment->FilePath);
+                $attachment->delete();
+                return response()->json(['message' => 'Deleted'], 205);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
+        }
+        else {
+            return response()->json("Not logged in", 401);
         }
     }
 }

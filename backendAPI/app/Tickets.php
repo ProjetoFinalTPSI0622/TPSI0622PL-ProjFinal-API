@@ -18,12 +18,12 @@ class Tickets extends Model
         'category',
     ];
 
-    public function createdByUser()
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'createdby');
     }
 
-    public function assignedToUser()
+    public function assignedTo()
     {
         return $this->belongsTo(User::class, 'assignedto');
     }
@@ -33,16 +33,21 @@ class Tickets extends Model
     // Exemplo de relacionamento com os modelos Status, Priority e Category (muitos para muitos)
     public function status()
     {
-        return $this->belongsTo(Statuses::class);
+        return $this->belongsTo(Statuses::class, 'status');
     }
 
     public function priority()
     {
-        return $this->belongsTo(Priorities::class);
+        return $this->belongsTo(Priorities::class, 'priority');
     }
 
     public function category()
     {
-        return $this->belongsTo(Categories::class);
+        return $this->belongsTo(Categories::class, 'category');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comments::class, 'ticket_id');
     }
 }
