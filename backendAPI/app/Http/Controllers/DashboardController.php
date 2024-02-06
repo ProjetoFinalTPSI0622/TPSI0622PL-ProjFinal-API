@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Tickets;
+use App\Statuses;
+
 use App\User;
 
 class DashboardController extends Controller
@@ -19,9 +22,12 @@ class DashboardController extends Controller
 
     public function getStatsByStatus()
     {
-        $stats = Tickets::selectRaw('status, count(*) as total')
-            ->groupBy('status')
+        $stats = \DB::table('tickets')
+            ->join('statuses', 'tickets.status', '=', 'statuses.id')
+            ->select('statuses.status_name', \DB::raw('count(*) as total'))
+            ->groupBy('statuses.status_name')
             ->get();
+
         return response()->json($stats);
     }
 
