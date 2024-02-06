@@ -65,8 +65,8 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        if ($request->has('role')) {
-            $role = Roles::where('name', $request->get('role'))->first();
+        if ($request->get('role') != null) {
+            $role = Roles::where('id', $request->get('role'))->first();
         } else {
             $role = Roles::where('name', 'user')->first();
         }

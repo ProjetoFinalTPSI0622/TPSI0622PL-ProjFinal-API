@@ -45,10 +45,16 @@ class UserInfoController extends Controller
      */
     public function store(UserInfoStoreRequest $request)
     {
-        \Log::info($request->all());
 
         try {
             $validatedData = $request->validated();
+            $path = 'defaultImageUsers/DefaultUser.png';
+
+            if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+                $file = $request->file('avatar');
+                $path = Storage::disk('public')->put('Users', $file);
+            }
+
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
@@ -56,10 +62,11 @@ class UserInfoController extends Controller
         try {
             $userInfo = UserInfo::create([
                 'user_id' => $validatedData['user_id'],
+                'class' => $validatedData['class'],
                 'nif' => $validatedData['nif'],
                 'birthday_date' => Carbon::createFromFormat('d-m-Y', $validatedData['birthday_date'])->toDateString(),
                 'gender_id' => $validatedData['gender'],
-                'profile_picture_path' => $validatedData['profile_picture_path'] ?? 'defaultImageUsers/DefaultUser.png',
+                'profile_picture_path' => $path,
                 'phone_number' => $validatedData['phone_number'],
                 'address' => $validatedData['address'],
                 'postal_code' => $validatedData['postal_code'],
@@ -72,22 +79,6 @@ class UserInfoController extends Controller
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
-/*
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                $file = $request->file('file');
-                $path = Storage::disk('public')->put('Users', $file);
-            } else {
-                $path = 'defaultImageUsers/DefaultUser.png';
-            }
-
-            $validatedData['profile_picture_path'] = $path;
-
-            return response()->json($userInfo, 201);
-
-        } catch (Exception $e) {
-            return response()->json($e->getMessage(), 500);
-        }*/
-
     }
 
     /**
