@@ -29,7 +29,7 @@ class UserStoreRequest extends FormRequest
             'email' => 'required|unique:users|max:255',
             'password' => 'required|max:255',
             'internalcode' => 'required|max:255',
-            'role_id' => 'sometimes|integer'
+            'role_id' => 'sometimes|integer|exists:roles,id'
         ];
     }
 
