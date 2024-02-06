@@ -37,7 +37,7 @@ class TicketCreatedEventListener
         $this->notifyRecipients($notificationId, $ticket['recipients']);
 
         //TODO: UNCOMMENT THIS IN PROD TO NOT WASTE EMAIL QUOTA DURING TESTS
-        //$this->sendEmail($event->ticket);
+        $this->sendEmail($event->ticket);
     }
 
     public function saveNotification($notificationData) {
@@ -69,6 +69,8 @@ class TicketCreatedEventListener
         foreach($users as $user){
             Mail::to($user->email)->send(new TicketCreatedMail($ticket));
         }*/
+
+        Mail::to('danielpereira22costa@gmail.com')->send(new TicketCreatedMail($ticket));
     }
 
     public function handleData($ticket): array
