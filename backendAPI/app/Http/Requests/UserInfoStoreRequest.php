@@ -26,6 +26,7 @@ class UserInfoStoreRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer|exists:users,id',
+            'class' => 'required|max:255',
             'nif' => 'required|unique:user_infos|size:9',
             'birthday_date' => 'required|date',
             'gender' => 'required|integer|exists:genders,id',
