@@ -53,6 +53,7 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::delete('/{ticket}', 'TicketsController@destroy');
     Route::get('user/{user_id}', 'TicketsController@userTickets');
     Route::get('/tickets/search', 'TicketsController@search');
+    Route::put('/{ticket}/changeStatus', 'TicketsController@changeStatus');
 });
 
 
