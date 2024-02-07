@@ -19,7 +19,7 @@ class DashboardController extends Controller
             ->get();
 
         $completedStats = Tickets::whereHas('status', function ($query) {
-            $query->where('status_name', 'Completed');
+            $query->where('name', 'Completed');
         })
             ->selectRaw('DAYNAME(created_at) as day, count(*) as total')
             ->groupBy('day')
@@ -37,7 +37,7 @@ class DashboardController extends Controller
             ->get();
 
         $completedStats = Tickets::whereHas('status', function ($query) {
-            $query->where('status_name', 'Completed');
+            $query->where('name', 'Completed');
         })
             ->selectRaw('MONTHNAME(created_at) as month, count(*) as total')
             ->groupBy('month')
@@ -53,8 +53,8 @@ class DashboardController extends Controller
     {
         $stats = \DB::table('tickets')
             ->join('statuses', 'tickets.status', '=', 'statuses.id')
-            ->select('statuses.status_name', \DB::raw('count(*) as total'))
-            ->groupBy('statuses.status_name')
+            ->select('statuses.name', \DB::raw('count(*) as total'))
+            ->groupBy('statuses.name')
             ->get();
 
         return response()->json($stats);
@@ -81,5 +81,15 @@ class DashboardController extends Controller
         return response()->json($stats, 200);
     }
 
+    public function getResolutionTimePerCategory() {
+        $stats = Tickets::selectRaw('categories.name as category, AVG(TIMESTAMPDIFF(HOUR, tickets.created_at, tickets.updated_at)) as average_resolution_time')
+            ->join('categories', 'tickets.category', '=', 'categories.id')
+            ->join('statuses', 'tickets.status', '=', 'statuses.id')
+            ->where('statuses.name', '=', 'completed')
+            ->groupBy('categories.name')
+            ->get();
+
+        return response()->json($stats, 200);
+    }
 
 }
