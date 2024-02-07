@@ -70,7 +70,7 @@ class TicketCreatedEventListener
             Mail::to($user->email)->send(new TicketCreatedMail($ticket));
         }*/
 
-        Mail::to('danielpereira22costa@gmail.com')->send(new TicketCreatedMail($ticket));
+        // Mail::to('danielpereira22costa@gmail.com')->send(new TicketCreatedMail($ticket));
     }
 
     public function handleData($ticket): array
