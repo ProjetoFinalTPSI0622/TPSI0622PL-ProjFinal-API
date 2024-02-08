@@ -474,10 +474,9 @@
                                                                                                                             {{ $ticket->title }}&quot;
                                                                                                                             acabou
                                                                                                                             de
-                                                                                                                            ser
-                                                                                                                            criado
-                                                                                                                            por
-                                                                                                                            {{ $ticket->createdBy->email }}
+                                                                                                                            mudar
+                                                                                                                            de
+                                                                                                                            estado para {{ $ticket->status }}.
                                                                                                                         </p>
                                                                                                         </td>
                                                                                                     </tr>

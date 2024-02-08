@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\NewTicketCreated;
 use App\Events\NotificationEvent;
 use App\Events\TicketCreatedEvent;
+use App\Events\TicketStatusChangedEvent;
 use App\Events\TicketUpdateEvent;
 use App\Handlers\NotificationDataHandler;
 use App\Handlers\RecipientHandler;
@@ -258,5 +259,25 @@ class TicketsController extends Controller
             return response()->json($e->getMessage(), 500);
         }
         return response()->json($ticket, 200);
+    }
+
+    public function changeStatus(Request $request, Tickets $ticket)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|exists:statuses,id',
+            ]);
+            $originalStatus = $ticket->status;
+            $ticket->status = $request->input('status');
+            $ticket->save();
+
+            if ($originalStatus != $ticket->status) {
+                event(new TicketStatusChangedEvent($ticket));
+            }
+
+            return response()->json($ticket, 200);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), 500);
+        }
     }
 }
