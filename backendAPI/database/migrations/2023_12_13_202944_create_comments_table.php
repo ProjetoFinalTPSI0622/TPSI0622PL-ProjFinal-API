@@ -18,7 +18,7 @@ class CreateCommentsTable extends Migration
             $table->foreignId('ticket_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('comment_type')->constrained();
-            $table->string('comment_body');
+            $table->string('comment_body')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

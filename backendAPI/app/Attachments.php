@@ -13,8 +13,13 @@ class Attachments extends Model
         'FilePath',
         'FileSize'
     ];
-    public function ticket()
+    public function tickets()
     {
-        return $this->belongsTo(Tickets::class, 'ticket_id');
+        return $this->belongsToMany(Tickets::class, 'attachment_ticket');
+    }
+
+    public function comments()
+    {
+        return $this->belongsToMany(Comments::class, 'attachment_comment');
     }
 }
