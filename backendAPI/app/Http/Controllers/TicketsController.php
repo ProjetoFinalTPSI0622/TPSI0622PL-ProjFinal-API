@@ -21,6 +21,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 //TODO: delete this after
@@ -42,7 +44,7 @@ class TicketsController extends Controller
                     // Retrieve all users
                     //$tickets = Tickets::all();
 
-                    $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority' )->get();
+                    $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority')->get();
 
 
                     // Return the list of users
@@ -83,7 +85,7 @@ class TicketsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return JsonResponse
      */
     public function store(TicketCreateRequest $request)
@@ -100,13 +102,13 @@ class TicketsController extends Controller
                 'priority' => $validatedData['priority'],
                 'category' => $validatedData['category'],
             ]);
-            try{
+            try {
 
                 $ticket->save();
 
-                try{
+                try {
                     event(new TicketCreatedEvent($ticket));
-                } catch(\Exception $e) {
+                } catch (\Exception $e) {
                     \Log::error($e->getMessage());
                 }
 
@@ -124,14 +126,14 @@ class TicketsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Tickets  $ticket
+     * @param \App\Tickets $ticket
      * @return JsonResponse
      */
     public function show(Tickets $ticket)
     {
-        try{
+        try {
 
-            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority' );
+            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
         } catch (Exception $e) {
 
             return response()->json($e->getMessage(), 500);
@@ -149,8 +151,8 @@ class TicketsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Tickets  $ticket
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Tickets $ticket
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Tickets $ticket)
@@ -192,7 +194,7 @@ class TicketsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Tickets  $tickets
+     * @param \App\Tickets $tickets
      * @return \Illuminate\Http\Response
      */
     public function destroy(Tickets $ticket)
@@ -225,17 +227,34 @@ class TicketsController extends Controller
                 'search' => 'required|string|max:255',
             ]);
             $search = $request->input('search');
-            $tickets = Tickets::where('title', 'like', '%'.$search.'%')->get();
+            $tickets = Tickets::where('title', 'like', '%' . $search . '%')->get();
             return response()->json($tickets, 200);
-        }catch (\Exception $exception) {
+        } catch (\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
     }
 
     public function ticketComments(Tickets $ticket)
     {
-        try{
-            $ticket->load('comments', 'comments.user', 'comments.user.userInfo');
+        try {
+            $ticket->load('comments.user.userInfo', 'comments.attachments');
+
+            foreach ($ticket->comments as $comment) {
+                if ($comment->user && $comment->user->userInfo) {
+                    $path = $comment->user->userInfo->profile_picture_path;
+                    if (!Str::startsWith($path, 'http')) {
+                        $comment->user->userInfo->profile_picture_path = Storage::disk('public')->url($path);
+                    }
+                }
+
+                foreach ($comment->attachments as $attachment) {
+                    $attachmentPath = $attachment->FilePath;
+                    if (!Str::startsWith($attachmentPath, 'http')) {
+                        $attachment->FilePath = Storage::disk('public')->url($attachmentPath);
+                    }
+                }
+            }
+
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
@@ -261,5 +280,4 @@ class TicketsController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
-
 }

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Attachments;
 use App\Comments;
 use App\Http\Requests\CommentStoreRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CommentsController extends Controller
 {
@@ -20,6 +22,7 @@ class CommentsController extends Controller
     public function store(CommentStoreRequest $request)
     {
         try{
+
             $validatedComment = $request->validated();
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
@@ -42,11 +45,29 @@ class CommentsController extends Controller
             try{
 
                 $comment->save();
+
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $path = Storage::disk('public')->put('attachments', $file);
+
+                        $attachment = new Attachments([
+                            'FileName' => $file->getClientOriginalName(),
+                            'FileType' => $file->getClientMimeType(),
+                            'FilePath' => $path,
+                            'FileSize' => $file->getSize(),
+                        ]);
+
+                        $attachment->save();
+                        $comment->attachments()->attach($attachment);
+
+                    }
+                }
+
             } catch (Exception $exception) {
                 return response()->json(['error' => $exception->getMessage()], 500);
             }
 
-            return response()->json($comment, 200);
+            return response()->json($comment->load('attachments'), 200);
         } catch (Exception $exception) {
             return response()->json(['error' => $exception->getMessage()], 500);
         }

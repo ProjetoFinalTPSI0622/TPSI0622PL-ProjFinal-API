@@ -26,7 +26,7 @@ class CommentStoreRequest extends FormRequest
     {
         return [
             'comment_type' => 'sometimes|exists:comment_types,id',
-            'comment_body' => 'required|string|max:255',
+            'comment_body' => 'nullable|string|max:255',
             'ticket_id' => 'required|exists:tickets,id'
             ];
     }

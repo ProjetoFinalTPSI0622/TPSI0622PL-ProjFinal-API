@@ -15,11 +15,10 @@ class CreateAttachmentsTable extends Migration
     {
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ticket_id')->constrained();
-            $table->string('FileName');
-            $table->string('FileType');
+            $table->string('FileName')->nullable();
+            $table->string('FileType')->nullable();
             $table->string('FilePath');
-            $table->string('FileSize');
+            $table->string('FileSize')->nullable();
             $table->timestamps();
         });
     }

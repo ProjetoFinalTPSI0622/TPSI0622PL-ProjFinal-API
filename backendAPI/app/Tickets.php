@@ -50,4 +50,9 @@ class Tickets extends Model
     {
         return $this->hasMany(Comments::class, 'ticket_id');
     }
+
+    public function attachments()
+    {
+        return $this->belongsToMany(Attachments::class, 'attachment_ticket');
+    }
 }
