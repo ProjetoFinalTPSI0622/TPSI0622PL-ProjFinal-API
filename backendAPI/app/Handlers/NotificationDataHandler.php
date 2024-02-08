@@ -17,6 +17,7 @@ class NotificationDataHandler
 
     public function handleNotificationData($eventType, $eventData) : array
     {
+        $this->data['event_type'] = $eventType;
 
         switch ($eventType) {
             case 'ticket_created':

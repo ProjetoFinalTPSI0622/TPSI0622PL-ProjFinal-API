@@ -33,7 +33,9 @@ class TicketCreatedEventListener
     public function handle(object $event)
     {
         $ticket = $this->handleData($event->ticket);
+
         $notificationId = $this->saveNotification($ticket);
+
         $this->notifyRecipients($notificationId, $ticket['recipients']);
 
         //TODO: UNCOMMENT THIS IN PROD TO NOT WASTE EMAIL QUOTA DURING TESTS
