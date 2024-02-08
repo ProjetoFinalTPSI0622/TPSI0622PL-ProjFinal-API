@@ -53,6 +53,7 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::delete('/{ticket}', 'TicketsController@destroy');
     Route::get('user/{user_id}', 'TicketsController@userTickets');
     Route::get('/tickets/search', 'TicketsController@search');
+    Route::put('/{ticket}/changeStatus', 'TicketsController@changeStatus');
 });
 
 
@@ -103,12 +104,18 @@ Route::group(['prefix' => 'genders', 'middleware' => 'checkAuth'], function() {
 Route::group(['prefix' => 'countries', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'CountriesController@index');
 });
-
+// -----------------------------------------------------------------STATES ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'states', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'StatusesController@index');
+    Route::post('/', 'StatusesController@store');
+});
 
 // -----------------------------------------------------------------DASHBOARD ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'dashboard', 'middleware' => 'checkAuth'], function() {
     Route::get('/ticketsPerDay', 'DashboardController@getTicketsPerDay');
+    Route::get('/ticketsPerMonth', 'DashboardController@getTicketsPerMonth');
     Route::get('/getStatsByStatus', 'DashboardController@getStatsByStatus');
+    Route::get('/metricByCategories', 'DashboardController@getResolutionTimePerCategory');
 });
 
 //TODO: dont use apiResource and make route groups instead

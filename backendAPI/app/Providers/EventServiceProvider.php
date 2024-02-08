@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Events\NewUserEvent;
 use App\Events\NotificationEvent;
 use App\Events\TicketCreatedEvent;
+use App\Events\TicketStatusChangedEvent;
 use App\Events\TicketUpdateEvent;
 use App\Listeners\NewUserListener;
 use App\Listeners\NotificationEventListener;
 use App\Listeners\TicketCreatedEventListener;
+use App\Listeners\TicketStatusChangedListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -29,6 +31,10 @@ class EventServiceProvider extends ServiceProvider
         TicketCreatedEvent::class => [
             TicketCreatedEventListener::class,
         ],
+
+        TicketStatusChangedEvent::class => [
+            TicketStatusChangedListener::class,
+        ]
     ];
 
 

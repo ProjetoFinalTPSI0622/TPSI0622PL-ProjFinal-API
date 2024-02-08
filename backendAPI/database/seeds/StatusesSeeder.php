@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-
+use Illuminate\Support\Facades\DB;
 class StatusesSeeder extends Seeder
 {
     /**
@@ -12,9 +12,9 @@ class StatusesSeeder extends Seeder
     public function run()
     {
         DB::table('statuses')->insert([
-            ['status_name' => 'Pending'],
-            ['status_name' => 'In Progress'],
-            ['status_name' => 'Completed'],
+            ['name' => 'Pending'],
+            ['name' => 'In Progress'],
+            ['name' => 'Completed'],
         ]);
     }
 }
