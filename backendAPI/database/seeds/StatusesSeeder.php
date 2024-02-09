@@ -12,9 +12,9 @@ class StatusesSeeder extends Seeder
     public function run()
     {
         DB::table('statuses')->insert([
-            ['name' => 'Pending'],
-            ['name' => 'In Progress'],
-            ['name' => 'Completed'],
+            ['name' => 'Pendente', 'color' => '#c82d2d'],
+            ['name' => 'Em Progresso', 'color' => '#d26c19'],
+            ['name' => 'Completo', 'color' => '#2dae47'],
         ]);
     }
 }
