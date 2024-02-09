@@ -31,5 +31,9 @@ class Comments extends Model
         return $this->belongsTo(CommentTypes::class, 'comment_type');
     }
 
+    public function attachments()
+    {
+        return $this->belongsToMany(Attachments::class, 'attachment_comment');
+    }
 
 }

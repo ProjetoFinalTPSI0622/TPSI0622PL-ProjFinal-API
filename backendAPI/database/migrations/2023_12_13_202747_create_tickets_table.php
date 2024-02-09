@@ -22,6 +22,7 @@ class CreateTicketsTable extends Migration
             $table->unsignedBigInteger('status');
             $table->unsignedBigInteger('priority');
             $table->unsignedBigInteger('category');
+            $table->dateTime('closed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

@@ -34,11 +34,10 @@ class UserController extends Controller
                     // Retrieve all users
                     $users = User::with('userInfo')->get();
 
-//
-//                      TODO:please dont leave code that doesnt work and crash the program
-//                        $users->each(function ($user) {
-//                        $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
-//                    });
+
+                        $users->each(function ($user) {
+                        $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
+                    });
 
                     // Return the list of users
                     return response()->json($users, 200);
