@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Attachments;
 use App\Events\NewTicketCreated;
 use App\Events\NotificationEvent;
 use App\Events\TicketCreatedEvent;
@@ -106,6 +107,23 @@ class TicketsController extends Controller
 
                 $ticket->save();
 
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $path = Storage::disk('public')->put('tickets', $file);
+
+                        $attachment = new Attachments([
+                            'FileName' => $file->getClientOriginalName(),
+                            'FileType' => $file->getClientMimeType(),
+                            'FilePath' => $path,
+                            'FileSize' => $file->getSize(),
+                        ]);
+
+                        $attachment->save();
+                        $ticket->attachments()->attach($attachment);
+
+                    }
+                }
+
                 try {
                     event(new TicketCreatedEvent($ticket));
                 } catch (\Exception $e) {
@@ -116,7 +134,7 @@ class TicketsController extends Controller
                 // Handle exceptions if any
                 return response()->json($e->getMessage(), 500);
             }
-            return response()->json($ticket, 200);
+            return response()->json($ticket->load('attachments'), 200);
         } catch (Exception $e) {
             // Handle exceptions if any
             return response()->json($e->getMessage(), 500);
@@ -133,7 +151,15 @@ class TicketsController extends Controller
     {
         try {
 
-            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
+
+            foreach ($ticket->attachments as $attachment) {
+                $attachmentPath = $attachment->FilePath;
+                if (!Str::startsWith($attachmentPath, 'http')) {
+                    $attachment->FilePath = Storage::disk('public')->url($attachmentPath);
+                }
+            }
+
         } catch (Exception $e) {
 
             return response()->json($e->getMessage(), 500);
