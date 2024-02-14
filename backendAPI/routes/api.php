@@ -46,6 +46,8 @@ Route::group(['prefix' => 'userInfo', 'middleware' => 'checkAuth'], function() {
 // -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::get('{ticket}/comments', 'TicketsController@ticketComments');
+    Route::put('{ticket}/assign/{technician}', 'TicketsController@assignTechnician');
+    Route::put('{ticket}/status/{status}', 'TicketsController@changeStatus');
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
     Route::get('/{ticket}', 'TicketsController@show');
@@ -53,7 +55,6 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::delete('/{ticket}', 'TicketsController@destroy');
     Route::get('user/{user_id}', 'TicketsController@userTickets');
     Route::get('/tickets/search', 'TicketsController@search');
-    Route::put('/{ticket}/changeStatus', 'TicketsController@changeStatus');
 });
 
 
@@ -110,6 +111,8 @@ Route::group(['prefix' => 'states', 'middleware' => 'checkAuth'], function() {
     Route::post('/', 'StatusesController@store');
 });
 
+Route::get('/status', 'StatusesController@index');
+
 // -----------------------------------------------------------------DASHBOARD ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'dashboard', 'middleware' => 'checkAuth'], function() {
     Route::get('/ticketsPerDay', 'DashboardController@getTicketsPerDay');
@@ -123,7 +126,6 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'checkAuth'], function() 
 Route::apiResource('gender', 'GendersController');
 Route::apiResource('country', 'CountriesController');
 Route::apiResource('attachment', 'AttachmentsController');
-Route::apiResource('status', 'StatusesController');
 Route::apiResource('commentType', 'CommentTypesController');
 //Route::apiResource('role', 'RolesController');
 

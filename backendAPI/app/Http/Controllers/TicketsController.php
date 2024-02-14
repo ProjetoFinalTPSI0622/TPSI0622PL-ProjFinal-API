@@ -14,6 +14,7 @@ use App\Http\Requests\TicketCreateRequest;
 use App\Http\Requests\TicketShowRequest;
 use App\Mail\TicketCreatedMail;
 use App\Notifications\ticketCreated;
+use App\Statuses;
 use App\Tickets;
 use App\User;
 use Exception;
@@ -144,7 +145,7 @@ class TicketsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param \App\Tickets $ticket
+     * @param Tickets $ticket
      * @return JsonResponse
      */
     public function show(Tickets $ticket)
@@ -178,7 +179,7 @@ class TicketsController extends Controller
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param \App\Tickets $ticket
+     * @param Tickets $ticket
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Tickets $ticket)
@@ -220,7 +221,7 @@ class TicketsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param \App\Tickets $tickets
+     * @param Tickets $tickets
      * @return \Illuminate\Http\Response
      */
     public function destroy(Tickets $ticket)
@@ -246,6 +247,12 @@ class TicketsController extends Controller
     }
 
 
+    /**
+     * Search for a ticket
+     *
+     * @param Tickets $tickets
+     * @return \Illuminate\Http\Response
+     */
     public function search(Request $request)
     {
         try {
@@ -260,6 +267,12 @@ class TicketsController extends Controller
         }
     }
 
+    /**
+     * Fetch ticket comments
+     *
+     * @param Tickets $ticket
+     * @return JsonResponse
+     */
     public function ticketComments(Tickets $ticket)
     {
         try {
@@ -287,23 +300,53 @@ class TicketsController extends Controller
         return response()->json($ticket, 200);
     }
 
-    public function changeStatus(Request $request, Tickets $ticket)
-    {
-        try {
-            $request->validate([
-                'status' => 'required|exists:statuses,id',
-            ]);
-            $originalStatus = $ticket->status;
-            $ticket->status = $request->input('status');
-            $ticket->save();
 
-            if ($originalStatus != $ticket->status) {
-                event(new TicketStatusChangedEvent($ticket));
+    /**
+     * Assigns a technician to a ticket
+     *
+     * @param Tickets $ticket
+     * @param User $technician
+     * @return JsonResponse
+     */
+    public function assignTechnician(Tickets $ticket, User $technician)
+    {
+        if(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+
+            $technician->load('roles');
+
+            if (!$technician->hasRole('technician')) {
+                return response()->json('User is not a technician', 400);
             }
 
+            $ticket->assignedto = $technician->id;
+            $ticket->save();
+            //event(new TicketUpdateEvent($ticket));
+            return response()->json($ticket, 200);
+        } else {
+            return response()->json('Not enough permissions', 400);
+        }
+
+    }
+
+
+    /**
+     * Change ticket status
+     *
+     * @param Tickets $ticket
+     * @param Statuses $status
+     * @return JsonResponse
+     */
+    public function changeStatus(Tickets $ticket, Statuses $status)
+    {
+        \Log::info($ticket);
+        \Log::info($status);
+        try {
+            $ticket->status = $status->id;
+            $ticket->save();
             return response()->json($ticket, 200);
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
+
     }
 }
