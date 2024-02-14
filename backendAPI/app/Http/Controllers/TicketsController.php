@@ -126,6 +126,7 @@ class TicketsController extends Controller
                 }
 
                 try {
+                    $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
                     event(new TicketCreatedEvent($ticket));
                 } catch (\Exception $e) {
                     \Log::error($e->getMessage());
@@ -338,8 +339,6 @@ class TicketsController extends Controller
      */
     public function changeStatus(Tickets $ticket, Statuses $status)
     {
-        \Log::info($ticket);
-        \Log::info($status);
         try {
             $ticket->status = $status->id;
             $ticket->save();
