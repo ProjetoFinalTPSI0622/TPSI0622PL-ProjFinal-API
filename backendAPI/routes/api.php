@@ -104,7 +104,7 @@ Route::group(['prefix' => 'genders', 'middleware' => 'checkAuth'], function() {
 Route::group(['prefix' => 'countries', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'CountriesController@index');
 });
-// -----------------------------------------------------------------STATES ROUTES-----------------------------------------------------------------
+// -----------------------------------------------------------------STATUS ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'states', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'StatusesController@index');
     Route::post('/', 'StatusesController@store');
