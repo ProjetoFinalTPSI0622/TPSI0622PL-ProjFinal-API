@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notification;
 use App\NotificationRecipient;
 use Exception;
 use Illuminate\Http\Request;
@@ -83,6 +84,19 @@ class NotificationRecipientController extends Controller
             $notification = NotificationRecipient::where('user_id', $user->id)->where('id', $id)->first();
             $notification->is_read = true;
             $notification->save();
+            return response()->json(['response' => true], 200);
+        } catch (Exception $e) {
+            // Handle exceptions if any
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function markAsSeen(Notification $notification){
+        $user = Auth::guard('api')->user();
+        try{
+            $notificationRecipient = NotificationRecipient::where('user_id', $user->id)->where('notification_id', $notification->id)->first();
+            $notificationRecipient->is_read = true;
+            $notificationRecipient->save();
             return response()->json(['response' => true], 200);
         } catch (Exception $e) {
             // Handle exceptions if any

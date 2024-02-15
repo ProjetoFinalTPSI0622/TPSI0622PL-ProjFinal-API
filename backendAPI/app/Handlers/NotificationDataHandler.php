@@ -21,9 +21,7 @@ class NotificationDataHandler
 
         switch ($eventType) {
             case 'ticket_created':
-                $this->data['ticket_id'] = $eventData['id'];
-                $this->data['created_by'] = $eventData['createdby'];
-                $this->data['ticket_title'] = $eventData['title'];
+                $this->data['ticket'] = $eventData;
                 $this->recipientList->addAllAdmins();
                 break;
 
