@@ -77,11 +77,28 @@ Route::group(['prefix' => 'priorities', 'middleware' => 'checkAuth'], function()
     Route::delete('/{id}', 'PrioritiesController@destroy');
 });
 
-// -----------------------------------------------------------------CATEGORY ROUTES-----------------------------------------------------------------
+// -----------------------------------------------------------------STATUSES ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'statuses', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'StatusesController@index');
+    Route::post('/', 'StatusesController@store');
+    Route::put('/{id}', 'StatusesController@update');
+    Route::delete('/{id}', 'StatusesController@destroy');
+});
+
+// -----------------------------------------------------------------CATEGORIES ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'CategoriesController@index');
     Route::post('/', 'CategoriesController@store');
+    Route::put('/{id}', 'CategoriesController@update');
     Route::delete('/{id}', 'CategoriesController@destroy');
+});
+
+// -----------------------------------------------------------------LOCATIONS ROUTES-----------------------------------------------------------------
+Route::group(['prefix' => 'locations', 'middleware' => 'checkAuth'], function() {
+    Route::get('/', 'LocationsController@index');
+    Route::post('/', 'LocationsController@store');
+    Route::put('/{id}', 'LocationsController@update');
+    Route::delete('/{id}', 'LocationsController@destroy');
 });
 
 // -----------------------------------------------------------------NOTIFICATIONS ROUTES-----------------------------------------------------------------
@@ -103,11 +120,6 @@ Route::group(['prefix' => 'genders', 'middleware' => 'checkAuth'], function() {
 // -----------------------------------------------------------------COUNTRIES ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'countries', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'CountriesController@index');
-});
-// -----------------------------------------------------------------STATUS ROUTES-----------------------------------------------------------------
-Route::group(['prefix' => 'states', 'middleware' => 'checkAuth'], function() {
-    Route::get('/', 'StatusesController@index');
-    Route::post('/', 'StatusesController@store');
 });
 
 // -----------------------------------------------------------------DASHBOARD ROUTES-----------------------------------------------------------------
