@@ -49,7 +49,10 @@ class AuthenticationController extends Controller
     public function checkAuth(Request $request){
         try {
             if(Auth::guard('api')->check()){
-                return response()->json(['auth' => true], 200);
+
+                $roles = Auth::guard('api')->user()->roles;
+
+                return response()->json(['auth' => true, 'roles' => $roles], 200);
             }
             else {
                 return response()->json(['auth' => false], 200);
