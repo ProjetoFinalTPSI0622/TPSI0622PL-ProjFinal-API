@@ -19,7 +19,7 @@ class TicketStatusChangedEvent
      *
      * @return void
      */
-    public $ticket;
+        public $ticket;
 
     public function __construct($ticket)
     {
