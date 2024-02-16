@@ -218,6 +218,7 @@ class UserController extends Controller
         try {
             $user = Auth::guard('api')->user();
 
+
             $user->load('roles');
 
             return response()->json($user, 200);
