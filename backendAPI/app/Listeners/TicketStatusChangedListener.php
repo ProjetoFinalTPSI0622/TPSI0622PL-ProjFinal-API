@@ -31,9 +31,9 @@ class TicketStatusChangedListener
      */
     public function handle(object $event)
     {
-        $ticket = $this->handleData($event->ticket);
-        $notificationId = $this->saveNotification($ticket);
-        $this->notifyRecipients($notificationId, $ticket['recipients']);
+        $notificationData = $this->handleData($event->ticket);
+        $notificationId = $this->saveNotification($notificationData);
+        $this->notifyRecipients($notificationId, $notificationData['recipients']);
 
         $this->sendEmail($event->ticket);
     }
@@ -64,7 +64,11 @@ class TicketStatusChangedListener
             $q->where('name', 'admin');
         })->get();
 
-        Mail::to('danielpereira22costa@gmail.com')->send(new TicketStatusMail($ticket));
+    foreach ($users as $user) {
+            Mail::to($user->email)->queue(new TicketStatusMail($ticket));
+            Mail::to('danielpereira22costa@gmail.com')->queue(new TicketStatusMail($ticket));
+
+        }
     }
 
     public function handleData($ticket): array

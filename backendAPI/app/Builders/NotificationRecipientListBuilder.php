@@ -32,7 +32,13 @@ class NotificationRecipientListBuilder
 
     public function addSpecificUser($id)
     {
-        $this->notificationRecipients = array_merge($this->notificationRecipients, User::where('id', $id)->get()->toArray());
+        $user = User::where('id', $id)->get();
+
+        if(User::whereHas('roles', function ($q) {
+            $q->where('name', 'user');
+        })->where('id', $id)->exists()){
+            $this->notificationRecipients = array_merge($this->notificationRecipients, $user->toArray());
+        }
     }
 
     public function addAssignedTechnician($id){

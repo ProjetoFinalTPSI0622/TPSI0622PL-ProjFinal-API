@@ -26,16 +26,16 @@ class NotificationDataHandler
                 break;
 
             case 'ticketStatusUpdated':
-                $this->data['ticket_id'] = $eventData['id'];
-                $this->data['updated_by'] = $eventData['updatedby'];
-                $this->data['updated_to'] = $eventData['status']['name'];
-                $this->recipientList->addAssignedTechnician($eventData['assignedto']['id']);
+                $this->data['ticket'] = $eventData;
+                $this->data['updated_by'] = $eventData['updated_by'];
+                $this->data['updated_to'] = $eventData['status'];
+                $this->recipientList->addAssignedTechnician($eventData['assignedto']['id']??null);
                 $this->recipientList->addAllAdmins();
-                $this->recipientList->addSpecificUser($eventData['createdby']['id']);
+                $this->recipientList->addSpecificUser($eventData['createdby']);
                 break;
 
             case 'ticketPriorityUpdated':
-                $this->data['ticket_id'] = $eventData['id'];
+                $this->data['ticket'] = $eventData;
                 $this->data['updated_by'] = $eventData['updatedby'];
                 $this->data['updated_to'] = $eventData['priority']['name'];
                 $this->recipientList->addAssignedTechnician($eventData['assignedto']['id']);
@@ -44,7 +44,7 @@ class NotificationDataHandler
                 break;
 
             case 'ticketCommentCreated':
-                $this->data['ticket_id'] = $eventData['id'];
+                $this->data['ticket'] = $eventData;
                 $this->data['comment_id'] = $eventData['comment']['id'];
                 $this->data['created_by'] = $eventData['comment']['createdby'];
                 $this->data['comment'] = $eventData['comment']['comment'];
@@ -54,7 +54,7 @@ class NotificationDataHandler
                 break;
 
             case 'ticketAssigned':
-                $this->data['ticket_id'] = $eventData['id'];
+                $this->data['ticket'] = $eventData;
                 $this->data['assigned_to'] = $eventData['assignedto']['name'];
                 $this->recipientList->addAssignedTechnician($eventData['assignedto']['id']);
                 $this->recipientList->addAllAdmins();
