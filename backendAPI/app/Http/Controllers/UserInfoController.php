@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class UserInfoController extends Controller
 {
@@ -136,17 +137,21 @@ class UserInfoController extends Controller
             $request->merge(['birthday_date' => Carbon::createFromFormat('d-m-Y', $request->birthday_date)->toDateString()]);
 
             $validatedData = $request->validate([
-                'user_id' => 'required|integer',
-                'class' => 'required|string',
-                'nif' => 'required|size:9',
+                'user_id' => 'required|integer|exists:users,id',
+                'class' => 'sometimes|max:255',
+                'nif' => [
+                    'required',
+                    'size:9',
+                    Rule::unique('user_infos')->ignore($userInfo->user_id, 'user_id'),
+                ],
                 'birthday_date' => 'required|date',
-                'gender_id' => 'required|integer',
-                'phone_number' => 'required|max:13',
-                'address' => 'required|max:255',
-                'postal_code' => 'required|max:8',
-                'city' => 'required|max:255',
-                'district' => 'required|max:255',
-                'country_id' => 'required|integer',
+                'gender_id' => 'nullable|integer|exists:genders,id',
+                'phone_number' => 'sometimes|max:13',
+                'address' => 'sometimes|max:255',
+                'postal_code' => 'sometimes|max:8',
+                'city' => 'sometimes|max:30',
+                'district' => 'sometimes|max:30',
+                'country_id' => 'nullable|integer|exists:countries,id',
             ]);
 
             if ($request->hasFile('file') && $request->file('file')->isValid()) {

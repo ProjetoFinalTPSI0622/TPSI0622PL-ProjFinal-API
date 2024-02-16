@@ -35,7 +35,7 @@ class UserController extends Controller
                     $users = User::with('userInfo')->get();
 
 
-                        $users->each(function ($user) {
+                    $users->each(function ($user) {
                         $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
                     });
 
@@ -74,7 +74,7 @@ class UserController extends Controller
 
             $validatedData = $request->validated();
 
-            try{
+            try {
                 $user = new User([
                     'name' => $validatedData['name'],
                     'email' => $validatedData['email'],
@@ -159,30 +159,30 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if (Auth::guard('api')->check()) { // Check if user is logged in
-           // if (Auth::user()->hasRole('admin')) { // Check if user is admin
+            // if (Auth::user()->hasRole('admin')) { // Check if user is admin
 
-                try {
-                    $user->roles()->detach();
+            try {
+                $user->roles()->detach();
 
-                    if ($user->userInfo) {
-                        $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
-                        if ($user->userInfo->profile_picture_path != $defaultImagePath) {
-                            Storage::disk('public')->delete($user->userInfo->profile_picture_path);
-                        }
-
-                        UserInfo::deleted($user->userInfo);
+                if ($user->userInfo) {
+                    $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
+                    if ($user->userInfo->profile_picture_path != $defaultImagePath) {
+                        Storage::disk('public')->delete($user->userInfo->profile_picture_path);
                     }
 
-                    $user->delete();
-
-                    return response()->json(['message' => 'User deleted'], 200);
-                } catch (Exception $e) {
-                    return response()->json($e->getMessage(), 500);
+                    UserInfo::deleted($user->userInfo);
                 }
 
-           // } else {
-           //     return response()->json("Not authorized", 401);
-           // }
+                $user->delete();
+
+                return response()->json(['message' => 'User deleted'], 200);
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+
+            // } else {
+            //     return response()->json("Not authorized", 401);
+            // }
         } else {
             return response()->json("Not logged in", 401);
         }
@@ -199,7 +199,7 @@ class UserController extends Controller
                 try {
                     $search = $request->get('search');
                     $users = User::where('name', 'LIKE', '%' . $search . '%') //search by either name or email
-                    ->orWhere('email', 'LIKE', '%' . $search . '%')
+                        ->orWhere('email', 'LIKE', '%' . $search . '%')
                         ->get();
                     return response()->json($users, 200);
                 } catch (Exception $e) {
@@ -215,13 +215,14 @@ class UserController extends Controller
 
     public function getAuthedUser()
     {
-
         try {
             $user = Auth::guard('api')->user();
-            
+
+
+            $user->load('roles');
+
             return response()->json($user, 200);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json($e, 500);
         }
     }
@@ -242,25 +243,25 @@ class UserController extends Controller
 
     public function changePassword(UserChangePasswordRequest $request)
     {
-            try {
-                $validatedData = $request->validated();
-                $user = Auth::guard('api')->user();
+        try {
+            $validatedData = $request->validated();
+            $user = Auth::guard('api')->user();
 
-                if($validatedData['currentPassword'] == $validatedData['newPassword']){
-                    return response()->json("New password cannot be the same as the current password", 401);
-                }
-
-                if(!Hash::check($validatedData['currentPassword'], $user->password)){
-                    return response()->json("Current password is incorrect", 401);
-                }
-
-                $user->setAttribute('password', Hash::make($validatedData['newPassword']));
-
-                $user->save();
-                return response()->json($user, 200);
-            } catch (Exception $e) {
-                return response()->json($e, 500);
+            if ($validatedData['currentPassword'] == $validatedData['newPassword']) {
+                return response()->json("New password cannot be the same as the current password", 401);
             }
+
+            if (!Hash::check($validatedData['currentPassword'], $user->password)) {
+                return response()->json("Current password is incorrect", 401);
+            }
+
+            $user->setAttribute('password', Hash::make($validatedData['newPassword']));
+
+            $user->save();
+            return response()->json($user, 200);
+        } catch (Exception $e) {
+            return response()->json($e, 500);
+        }
     }
 
 }

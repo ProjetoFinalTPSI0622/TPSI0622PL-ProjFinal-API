@@ -26,16 +26,16 @@ class UserInfoStoreRequest extends FormRequest
     {
         return [
             'user_id' => 'required|integer|exists:users,id',
-            'class' => 'required|max:255',
+            'class' => 'sometimes|max:255',
             'nif' => 'required|unique:user_infos|size:9',
             'birthday_date' => 'required|date',
-            'gender' => 'required|integer|exists:genders,id',
-            'phone_number' => 'required|max:13',
-            'address' => 'required|max:255',
-            'postal_code' => 'required|max:8',
-            'city' => 'required|max:30',
-            'district' => 'required|max:30',
-            'country' => 'required|integer|exists:countries,id',
+            'gender' => 'nullable|integer|exists:genders,id',
+            'phone_number' => 'sometimes|max:13',
+            'address' => 'sometimes|max:255',
+            'postal_code' => 'sometimes|max:8',
+            'city' => 'sometimes|max:30',
+            'district' => 'sometimes|max:30',
+            'country' => 'nullable|integer|exists:countries,id',
         ];
     }
 
