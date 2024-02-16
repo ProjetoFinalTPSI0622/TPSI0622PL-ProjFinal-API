@@ -218,6 +218,7 @@ class UserController extends Controller
 
         try {
             $user = Auth::guard('api')->user();
+            
             return response()->json($user, 200);
         }
         catch (Exception $e) {
