@@ -52,5 +52,29 @@ class UserSeeder extends Seeder
             'password' => Hash::make('123456'),
             'internalcode' => 'ABC333'
         ]);
+
+        DB::table('users')->insert([
+            'name' => 'Bernardo',
+            'normalized_name' => 'BERNARDO',
+            'email' => 'bernardoTeste@hotmail.com',
+            'password' => Hash::make('123456'),
+            'internalcode' => 'ABC111'
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Claudio',
+            'normalized_name' => 'CLAUDIO',
+            'email' => 'claudioTeste@hotmail.com',
+            'password' => Hash::make('123456'),
+            'internalcode' => 'ABC131'
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Joao',
+            'normalized_name' => 'JOAO',
+            'email' => 'joaoTeste@hotmail.com',
+            'password' => Hash::make('123456'),
+            'internalcode' => 'ABC533'
+        ]);
     }
 }
