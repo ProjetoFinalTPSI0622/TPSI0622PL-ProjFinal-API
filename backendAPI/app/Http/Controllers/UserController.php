@@ -28,12 +28,10 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
+            if (Auth::guard('api')->user()->hasRole('admin')) {
                 try {
                     // Retrieve all users
                     $users = User::with('userInfo')->get();
-
 
                     $users->each(function ($user) {
                         $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
@@ -49,10 +47,6 @@ class UserController extends Controller
                 // Return unauthorized response if not authenticated
                 return response()->json("Not Enough Permissions", 401);
             }
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
-        }
     }
 
 
@@ -64,8 +58,8 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+
                 if ($request->get('role') != null) {
                     $role = Roles::where('id', $request->get('role'))->first();
                 } else {
@@ -101,14 +95,10 @@ class UserController extends Controller
             } else {
                 return response()->json("Not authorized", 401);
             }
-        } else {
-            return response()->json("Not logged in", 401);
-        }
     }
 
     public function show(User $user)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
             if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $user->id) {
                 try {
                     $user->load('userInfo', 'roles');
@@ -122,10 +112,6 @@ class UserController extends Controller
             } else {
                 return response()->json("Not authorized", 401);
             }
-
-        } else {
-            return response()->json("Not logged in", 401);
-        }
     }
 
     /**
@@ -137,7 +123,6 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
             if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $user->id) {
                 try {
                     $validatedData = $request->validate([
@@ -148,9 +133,7 @@ class UserController extends Controller
 
                     $roles = Roles::query()->where('id', $request->get('role'))->get();
 
-
                     $user->roles()->sync($roles);
-                    \Log::info($user);
 
                     $user->update($validatedData);
                     return response()->json($user, 200);
@@ -160,10 +143,6 @@ class UserController extends Controller
             } else {
                 return response()->json("Not authorized", 401);
             }
-
-        } else {
-            return response()->json("Not logged in", 401);
-        }
     }
 
     /**
@@ -174,7 +153,6 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
 
                 try {
@@ -199,9 +177,6 @@ class UserController extends Controller
             } else {
                 return response()->json("Not authorized", 401);
             }
-        } else {
-            return response()->json("Not logged in", 401);
-        }
     }
 
     /**
@@ -210,7 +185,6 @@ class UserController extends Controller
      */
     public function search(Request $request) //search by either id name or email
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
             if (Auth::user()->hasRole('user')) { // Check if user is admin
                 try {
                     $search = $request->get('search');
@@ -224,14 +198,10 @@ class UserController extends Controller
             } else {
                 return response()->json("Not authorized", 401);
             }
-        } else {
-            return response()->json("Not logged in", 401);
-        }
     }
 
     public function getAuthedUser()
     {
-
         try {
             $user = Auth::guard('api')->user();
             return response()->json($user, 200);
@@ -251,7 +221,6 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json($e, 500);
         }
-
     }
 
     public function changePassword(UserChangePasswordRequest $request)
@@ -276,5 +245,4 @@ class UserController extends Controller
             return response()->json($e, 500);
         }
     }
-
 }

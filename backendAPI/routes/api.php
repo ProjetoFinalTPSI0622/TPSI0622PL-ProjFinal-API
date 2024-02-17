@@ -37,10 +37,8 @@ Route::group(['prefix' => 'users', 'middleware' => 'checkAuth'], function() {
 
 // -----------------------------------------------------------------USER_INFO ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'userInfo', 'middleware' => 'checkAuth'], function() {
-    Route::get('/', 'UserInfoController@index');
     Route::post('/', 'UserInfoController@store');
     Route::put('/{userInfo}', 'UserInfoController@update');
-    Route::delete('/{userInfo}', 'UserInfoController@destroy');
 });
 
 // -----------------------------------------------------------------TICKET ROUTES-----------------------------------------------------------------
@@ -122,13 +120,3 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'checkAuth'], function() 
 });
 
 //TODO: dont use apiResource and make route groups instead
-
-Route::apiResource('gender', 'GendersController');
-Route::apiResource('country', 'CountriesController');
-Route::apiResource('attachment', 'AttachmentsController');
-Route::apiResource('commentType', 'CommentTypesController');
-//Route::apiResource('role', 'RolesController');
-
-Route::apiResource('userInfo', 'UserInfoController');
-
-Route::get('/attachment/attachmentsTicket/{ticket_id}', 'AttachmentsController@attachmentsTicket')->name('attachment.ticket');
