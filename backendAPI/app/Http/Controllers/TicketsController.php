@@ -36,41 +36,14 @@ class TicketsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index()
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
-                try {
-                    // Retrieve all users
-                    //$tickets = Tickets::all();
-
-                    $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority')->get();
-
-
-                    // Return the list of users
-                    return response()->json($tickets, 200);
-                } catch (Exception $e) {
-                    // Handle exceptions if any
-                    return response()->json($e->getMessage(), 500);
-                }
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
-            }
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
-        }
-    }
-
-    public function userTickets()
-    {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
+        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
             try {
-                // Retrieve all users
-                $tickets = Tickets::where('createdby', Auth::guard('api')->user()->id)->get();
+
+                $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority')->get();
 
                 // Return the list of users
                 return response()->json($tickets, 200);
@@ -79,9 +52,33 @@ class TicketsController extends Controller
                 return response()->json($e->getMessage(), 500);
             }
         } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+
+            try{
+
+                $tickets = Tickets::where('createdby', Auth::guard('api')->user()->id)->get();
+                $tickets->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                return response()->json($tickets, 200);
+
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
         }
+    }
+
+    public function userTickets()
+    {
+        try {
+            // Retrieve all tickets
+            $tickets = Tickets::where('createdby', Auth::guard('api')->user()->id)->get();
+            $tickets->load('createdby', 'assignedto', 'status', 'category', 'priority');
+
+            // Return the list of tickets
+            return response()->json($tickets, 200);
+        } catch (Exception $e) {
+            // Handle exceptions if any
+            return response()->json($e->getMessage(), 500);
+        }
+
     }
 
     /**
@@ -151,6 +148,13 @@ class TicketsController extends Controller
      */
     public function show(Tickets $ticket)
     {
+
+        if(!(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician'))) {
+
+            if ($ticket->createdby != Auth::guard('api')->user()->id) {
+                return response()->json('Not enough permissions', 400);
+            }
+        }
         try {
 
             $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
@@ -183,8 +187,10 @@ class TicketsController extends Controller
      * @param Tickets $ticket
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tickets $ticket)
+    /*public function update(Request $request, Tickets $ticket)
     {
+    TODO: apagar se nao for ser usado o editar ticket
+
         if (Auth::guard('api')->check()) { // Check if user is logged in
             if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
                 try {
@@ -217,34 +223,28 @@ class TicketsController extends Controller
             // Return unauthorized response if not authenticated
             return response()->json("Not authenticated", 401);
         }
-    }
+    }*/
 
     /**
      * Remove the specified resource from storage.
      *
      * @param Tickets $tickets
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function destroy(Tickets $ticket)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
-                try {
-                    $ticket->delete();
-                    return response()->json(['message' => 'Ticket Deleted'], 205);
-                } catch (Exception $e) {
-                    // Handle exceptions if any
-                    return response()->json($e->getMessage(), 500);
-                }
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
+        if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+            try {
+                $ticket->delete();
+                return response()->json(['message' => 'Ticket Deleted'], 205);
+            } catch (Exception $e) {
+                // Handle exceptions if any
+                return response()->json($e->getMessage(), 500);
             }
         } else {
             // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json("Not Enough Permissions", 401);
         }
-
     }
 
 
@@ -254,8 +254,11 @@ class TicketsController extends Controller
      * @param Tickets $tickets
      * @return \Illuminate\Http\Response
      */
-    public function search(Request $request)
+    /*public function search(Request $request)
     {
+
+    TODO:  se nao for ser usado apagar
+
         try {
             $request->validate([
                 'search' => 'required|string|max:255',
@@ -266,7 +269,7 @@ class TicketsController extends Controller
         } catch (\Exception $exception) {
             return response()->json(['error' => $exception], 500);
         }
-    }
+    }*/
 
     /**
      * Fetch ticket comments
@@ -339,13 +342,66 @@ class TicketsController extends Controller
      */
     public function changeStatus(Tickets $ticket, Statuses $status)
     {
-        try {
+        if(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+            try{
+
             $ticket->status = $status->id;
             $ticket->save();
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            try{
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                $ticket['updated_by'] = Auth::guard('api')->user();
+                \Log::info($ticket);
+                event(new TicketStatusChangedEvent($ticket));
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
             return response()->json($ticket, 200);
-        } catch (Exception $e) {
-            return response()->json($e->getMessage(), 500);
+        } else {
+            return response()->json('Not enough permissions', 400);
         }
+    }
 
+    public function closeTicket(Tickets $ticket){
+        if(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+            try{
+                $ticket->status = Statuses::where('name', 'Completo')->first()->id;
+                $ticket->save();
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            try{
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                event(new TicketStatusChangedEvent($ticket));
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            return response()->json($ticket, 200);
+        } else {
+            return response()->json('Not enough permissions', 400);
+        }
+    }
+
+    public function reopenTicket(Tickets $ticket){
+        if(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+            try{
+                $ticket->status = Statuses::where('name', 'Pendente')->first()->id;
+                $ticket->save();
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            try{
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                $ticket['updated_by'] = Auth::guard('api')->user()->id;
+                event(new TicketStatusChangedEvent($ticket));
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            return response()->json($ticket, 200);
+        } else {
+            return response()->json('Not enough permissions', 400);
+        }
     }
 }

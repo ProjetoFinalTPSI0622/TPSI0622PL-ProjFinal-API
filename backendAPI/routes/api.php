@@ -45,6 +45,10 @@ Route::group(['prefix' => 'userInfo', 'middleware' => 'checkAuth'], function() {
 Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::get('{ticket}/comments', 'TicketsController@ticketComments');
     Route::put('{ticket}/assign/{technician}', 'TicketsController@assignTechnician');
+
+    Route::put('{ticket}/close', 'TicketsController@closeTicket');
+    Route::put('{ticket}/reopen', 'TicketsController@reopenTicket');
+
     Route::put('{ticket}/status/{status}', 'TicketsController@changeStatus');
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
