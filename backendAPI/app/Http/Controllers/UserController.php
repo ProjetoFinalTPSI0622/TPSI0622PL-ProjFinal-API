@@ -127,7 +127,7 @@ class UserController extends Controller
                 try {
                     $validatedData = $request->validate([
                         'name' => 'required|max:255',
-                        'email' => 'required|max:255',
+                        'email' => 'required|email|max:255',
                         'internalcode' => 'required|max:255',
                     ]);
 
