@@ -136,6 +136,7 @@ Route::group(['prefix' => 'dashboard', 'middleware' => 'checkAuth'], function() 
     Route::get('/ticketsPerMonth', 'DashboardController@getTicketsPerMonth');
     Route::get('/getStatsByStatus', 'DashboardController@getStatsByStatus');
     Route::get('/metricByCategories', 'DashboardController@getResolutionTimePerCategory');
+    Route::get('/ticketsByCategories', 'DashboardController@getStatsByCategories');
 });
 
 //TODO: dont use apiResource and make route groups instead

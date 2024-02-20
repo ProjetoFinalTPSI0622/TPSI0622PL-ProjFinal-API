@@ -44,7 +44,9 @@ class TicketsController extends Controller
         if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
             try {
 
-                $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority')->get();
+                $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
                 // Return the list of users
                 return response()->json($tickets, 200);
