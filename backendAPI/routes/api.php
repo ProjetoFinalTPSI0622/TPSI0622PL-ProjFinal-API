@@ -50,6 +50,8 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
     Route::put('{ticket}/reopen', 'TicketsController@reopenTicket');
 
     Route::put('{ticket}/status/{status}', 'TicketsController@changeStatus');
+    Route::put('{ticket}/priority/{priority}', 'TicketsController@changePriority');
+    
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
     Route::get('/{ticket}', 'TicketsController@show');
@@ -77,6 +79,7 @@ Route::group(['prefix' => 'commentTypes', 'middleware' => 'checkAuth'], function
 Route::group(['prefix' => 'priorities', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'PrioritiesController@index');
     Route::post('/', 'PrioritiesController@store');
+    Route::put('/{id}', 'PrioritiesController@update');
     Route::delete('/{id}', 'PrioritiesController@destroy');
 });
 

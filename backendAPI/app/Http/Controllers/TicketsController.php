@@ -15,6 +15,7 @@ use App\Http\Requests\TicketShowRequest;
 use App\Mail\TicketCreatedMail;
 use App\Notifications\ticketCreated;
 use App\Statuses;
+use App\Priorities;
 use App\Tickets;
 use App\User;
 use Exception;
@@ -355,6 +356,26 @@ class TicketsController extends Controller
                 $ticket['updated_by'] = Auth::guard('api')->user();
                 \Log::info($ticket);
                 event(new TicketStatusChangedEvent($ticket));
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            return response()->json($ticket, 200);
+        } else {
+            return response()->json('Not enough permissions', 400);
+        }
+    }
+
+    public function changePriority(Tickets $ticket, Priorities $priority)
+    {
+        if(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+            try{
+                $ticket->priority = $priority->id;
+                $ticket->save();
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            try{
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
             } catch (Exception $e) {
                 return response()->json($e->getMessage(), 500);
             }
