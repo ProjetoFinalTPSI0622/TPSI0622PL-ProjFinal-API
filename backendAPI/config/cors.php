@@ -15,20 +15,16 @@ return [
     |
     */
 
-    'paths' => ['api/*'],
+    'paths' => [],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => [],
 
-    'allowed_origins' => ['*'], //TODO: Change this to the production url
+    'allowed_origins' => [], //TODO: Change this to the production url
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['*'],
+    'allowed_headers' => [],
 
     'exposed_headers' => [],
-
-    'max_age' => 0,
-
-    'supports_credentials' => true,
 
 ];
