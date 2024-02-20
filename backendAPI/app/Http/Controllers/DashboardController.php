@@ -92,4 +92,14 @@ class DashboardController extends Controller
         return response()->json($stats, 200);
     }
 
+    public function getStatsByCategories()
+    {
+        $stats = \DB::table('tickets')
+            ->join('categories', 'tickets.category', '=', 'categories.id')
+            ->select('categories.name', \DB::raw('count(*) as total'))
+            ->groupBy('categories.name')
+            ->get();
+
+        return response()->json($stats);
+    }
 }
