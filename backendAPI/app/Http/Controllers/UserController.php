@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetAuthedUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserChangePasswordRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\User;
@@ -121,24 +122,20 @@ class UserController extends Controller
      * @param \App\User $user
      * @return JsonResponse
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
         if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $user->id) {
             try {
-                $validatedData = $request->validate([
-                    'name' => 'required|max:255',
-                    'email' => 'required|email|max:255',
-                    'internalcode' => 'required|max:255',
-                ]);
+
+                $validatedData = $request->validated();
 
                 $roles = Roles::query()->where('id', $request->get('role'))->get();
-
                 $user->roles()->sync($roles);
-
                 $user->update($validatedData);
+
                 return response()->json($user, 200);
             } catch (Exception $e) {
-                return response()->json($e, 500);
+                return response()->json($e->getMessage(), 500);
             }
         } else {
             return response()->json("Not authorized", 401);
