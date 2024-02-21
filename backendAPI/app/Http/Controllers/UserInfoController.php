@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserInfoRequest;
 use App\Http\Requests\UserInfoStoreRequest;
 use App\User;
 use App\UserInfo;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -27,19 +29,40 @@ class UserInfoController extends Controller
 
             $myUser = User::find($request->user_id);
 
+            $messages = [
+                'user_id.required' => 'O id do utilizador é obrigatório',
+                'user_id.integer' => 'O id do utilizador deve ser um número inteiro',
+                'user_id.exists' => 'O id do utilizador não existe',
+                'class.max' => 'A turma deve ter menos de 255 caracteres',
+                'nif.required' => 'O NIF é obrigatório',
+                'nif.unique' => 'O NIF já existe',
+                'nif.regex' => 'O NIF deve ter 9 dígitos',
+                'birthday_date.required' => 'A data de nascimento é obrigatória',
+                'birthday_date.date' => 'A data de nascimento deve ser uma data',
+                'gender.integer' => 'O género deve ser um número inteiro',
+                'gender.exists' => 'O género não existe',
+                'phone_number.regex' => 'O número de telefone deve ter o formato +351123456789 ou 123456789',
+                'address.max' => 'A morada deve ter menos de 255 caracteres',
+                'postal_code.regex' => 'O código postal deve ter o formato 1234-123',
+                'city.max' => 'A cidade deve ter menos de 30 caracteres',
+                'district.max' => 'O distrito deve ter menos de 30 caracteres',
+                'country.integer' => 'O país deve ser um número inteiro',
+                'country.exists' => 'O país não existe',
+            ];
+
             $validator = Validator::make($request->all(), [
                 'user_id' => 'required|integer|exists:users,id',
                 'class' => 'sometimes|max:255',
-                'nif' => 'required|unique:user_infos|size:9',
+                'nif' => 'required|unique:user_infos|regex:/^[0-9]{9}$/',
                 'birthday_date' => 'required|date',
                 'gender' => 'nullable|integer|exists:genders,id',
-                'phone_number' => 'sometimes|max:13',
+                'phone_number' => ['nullable', 'regex:/^(\+\d{12}|\d{9})$/'],
                 'address' => 'sometimes|max:255',
-                'postal_code' => 'sometimes|max:8',
+                'postal_code' => 'nullable|regex:/^\d{4}-\d{3}$/',
                 'city' => 'sometimes|max:30',
                 'district' => 'sometimes|max:30',
                 'country' => 'nullable|integer|exists:countries,id',
-            ]);
+            ], $messages);
 
             if ($validator->fails()) {
                 if ($myUser != null) {
@@ -47,7 +70,7 @@ class UserInfoController extends Controller
                     $myUser->delete();
                 }
                 return response()->json([
-                    'message' => 'The given data was invalid.',
+                    'message' => 'Os dados segintes estao invalidos.',
                     'errors' => $validator->errors(),
                 ], 500);
             }
@@ -107,38 +130,13 @@ class UserInfoController extends Controller
      * @param \App\UserInfo $userInfo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, UserInfo $userInfo)
+    public function update(UpdateUserInfoRequest  $request, UserInfo $userInfo)
     {
         if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $userInfo->user_id) {
 
-            try {
-                $request->merge(['birthday_date' => Carbon::createFromFormat('d-m-Y', $request->birthday_date)->toDateString()]);
-
-                $validatedData = $request->validate([
-                    'user_id' => 'required|integer|exists:users,id',
-                    'class' => 'sometimes|max:255',
-                    'nif' => [
-                        'required',
-                        'size:9',
-                        Rule::unique('user_infos')->ignore($userInfo->user_id, 'user_id'),
-                    ],
-                    'birthday_date' => 'required|date',
-                    'gender_id' => 'nullable|integer|exists:genders,id',
-                    'phone_number' => 'sometimes|max:13',
-                    'address' => 'sometimes|max:255',
-                    'postal_code' => 'sometimes|max:8',
-                    'city' => 'sometimes|max:30',
-                    'district' => 'sometimes|max:30',
-                    'country_id' => 'nullable|integer|exists:countries,id',
-                ]);
-
-            } catch (Exception $e) {
-
-                return response()->json($e->getMessage(), 500);
-            }
+                $validatedData = $request->validated();
 
             try {
-
 
                 if ($request->hasFile('file') && $request->file('file')->isValid()) {
                     $file = $request->file('file');
@@ -155,6 +153,7 @@ class UserInfoController extends Controller
 
                 return response()->json($e->getMessage(), 500);
             }
+
             $userInfo->update($validatedData);
 
             return response()->json($userInfo, 200);

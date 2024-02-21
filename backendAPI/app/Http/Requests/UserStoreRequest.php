@@ -26,7 +26,7 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255',
-            'email' => 'required|unique:users|max:255',
+            'email' => 'required|email|unique:users|max:255',
             'password' => 'required|max:255',
             'internalcode' => 'required|max:255',
             'role_id' => 'sometimes|integer|exists:roles,id'
@@ -41,15 +41,16 @@ class UserStoreRequest extends FormRequest
      public function messages()
      {
          return [
-             'name.required' => 'A name is required',
-             'name.unique'  => 'A name is unique',
-             'email.required' => 'An email is required',
-             'email.unique' => 'An email must be unique',
-             'email.max' => 'An email must be less than 255 characters',
-             'password.required' => 'A password is required',
-             'password.max' => 'A password must be less than 255 characters',
-             'internalcode.required' => 'An internal code is required',
-             'internalcode.max' => 'An internal code must be less than 255 characters',
+             'name.required' => 'O nome é obrigatório',
+             'name.max'  => 'O nome deve ter menos de 255 caracteres',
+             'email.required' => 'O email é obrigatório',
+             'email.email' => 'O email deve ser um email válido',
+             'email.unique' => 'O email já existe',
+             'email.max' => 'O email deve ter menos de 255 caracteres',
+             'password.required' => 'A password é obrigatória',
+             'password.max' => 'A password deve ter menos de 255 caracteres',
+             'internalcode.required' => 'O código interno é obrigatório',
+             'internalcode.max' => 'O código interno deve ter menos de 255 caracteres',
          ];
      }
 }
