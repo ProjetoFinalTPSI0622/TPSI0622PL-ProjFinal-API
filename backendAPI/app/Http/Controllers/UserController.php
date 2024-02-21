@@ -203,7 +203,7 @@ class UserController extends Controller
             $user = Auth::guard('api')->user();
 
 
-            $user->load('roles');
+            $user->load('roles', 'userInfo');
 
             return response()->json($user, 200);
         } catch (Exception $e) {

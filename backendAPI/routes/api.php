@@ -89,7 +89,7 @@ Route::group(['prefix' => 'statuses', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'StatusesController@index');
     Route::post('/', 'StatusesController@store');
     Route::put('/{id}', 'StatusesController@update');
-    Route::delete('/{id}', 'StatusesController@destroy');
+    Route::delete('/{status}', 'StatusesController@destroy');
 });
 
 // -----------------------------------------------------------------CATEGORIES ROUTES-----------------------------------------------------------------
