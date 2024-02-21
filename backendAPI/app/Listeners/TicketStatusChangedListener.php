@@ -64,10 +64,10 @@ class TicketStatusChangedListener
             $q->where('name', 'admin');
         })->get();
 
-    foreach ($users as $user) {
-            Mail::to($user->email)->queue(new TicketStatusMail($ticket));
-            Mail::to('danielpereira22costa@gmail.com')->queue(new TicketStatusMail($ticket));
+        Mail::to('fabiomiguel3.10@gmail.com')->send(new TicketStatusMail($ticket));
 
+        foreach ($users as $user) {
+            Mail::to($user->email)->queue(new TicketStatusMail($ticket));
         }
     }
 

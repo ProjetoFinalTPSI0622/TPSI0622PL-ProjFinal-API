@@ -34,7 +34,7 @@ public $ticket;
         //TODO:
         // change from to something like CESAEDESK <email>
         return $this->markdown('emails.ticket-created')
-                    ->subject('Novo Ticket Criado: Ticket # ' . $this->ticket->id . ' - ' . $this->ticket->title)
+                    ->subject('Ticket # ' . $this->ticket->id . ' - ' . $this->ticket->title)
                     ->with([
                         'ticket' => $this->ticket,
                     ]);

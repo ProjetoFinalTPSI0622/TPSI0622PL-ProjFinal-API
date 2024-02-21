@@ -34,7 +34,7 @@ public $ticket;
         //TODO:
         // change from to something like CESAEDESK <email>
         return $this->markdown('emails.ticket-status')
-                    ->subject('O status do Ticket # ' . $this->ticket->id . ' - ' . $this->ticket->title . ' foi atualizado')
+                    ->subject('Ticket # ' . $this->ticket->id . ' - ' . $this->ticket->title)
                     ->with([
                         'ticket' => $this->ticket,
                     ]);
