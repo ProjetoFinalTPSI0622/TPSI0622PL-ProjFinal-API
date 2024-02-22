@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PasswordResetEvent;
 use App\Http\Requests\UserLoginRequest;
 use Exception;
 use Illuminate\Http\Request;
@@ -68,6 +69,19 @@ class AuthenticationController extends Controller
             $user = Auth::guard('api')->user();
             $user->tokens()->delete();
             return response()->json(['message' => 'Logged Out'], 200);
+        }
+        catch (Exception $e) {
+            return response()->json($e, 500);
+        }
+    }
+
+    public function forgotPassword(){
+        try {
+            $user = Auth::guard('api')->user();
+
+            event(new PasswordResetEvent($user));
+
+            return response()->json(['message' => 'Password Reset Email Sent'], 200);
         }
         catch (Exception $e) {
             return response()->json($e, 500);

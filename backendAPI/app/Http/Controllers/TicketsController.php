@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Attachments;
 use App\Events\NewTicketCreated;
 use App\Events\NotificationEvent;
+use App\Events\TicketAssignedEvent;
 use App\Events\TicketCreatedEvent;
 use App\Events\TicketStatusChangedEvent;
 use App\Events\TicketUpdateEvent;
@@ -181,50 +182,6 @@ class TicketsController extends Controller
 
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param Tickets $ticket
-     * @return \Illuminate\Http\Response
-     */
-    /*public function update(Request $request, Tickets $ticket)
-    {
-    TODO: apagar se nao for ser usado o editar ticket
-
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
-                try {
-                    $validatedData = $request->validate([
-                        'createdby' => 'required|exists:users,id',
-                        'assignedto' => 'required|exists:users,id',
-                        'title' => 'required|string|max:255',
-                        'description' => 'required|string',
-                        'status' => 'required|exists:statuses,id',
-                        'priority' => 'required|exists:priorities,id',
-                        'category' => 'required|exists:categories,id',
-                    ]);
-                    $originalStatus = $ticket->status;
-                    $ticket->update($validatedData);
-
-                    if ($originalStatus != $ticket->status) {
-                        event(new TicketUpdateEvent($ticket));
-                    }
-
-                    return response()->json($ticket, 200);
-                } catch (Exception $e) {
-                    // Handle exceptions if any
-                    return response()->json($e->getMessage(), 500);
-                }
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
-            }
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
-        }
-    }*/
 
     /**
      * Remove the specified resource from storage.
@@ -325,7 +282,9 @@ class TicketsController extends Controller
 
             $ticket->assignedto = $technician->id;
             $ticket->save();
-            //event(new TicketUpdateEvent($ticket));
+
+            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
+            event(new TicketAssignedEvent($ticket));
             return response()->json($ticket, 200);
         } else {
             return response()->json('Not enough permissions', 400);
@@ -354,7 +313,6 @@ class TicketsController extends Controller
             try{
                 $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
                 $ticket['updated_by'] = Auth::guard('api')->user();
-                \Log::info($ticket);
                 event(new TicketStatusChangedEvent($ticket));
             } catch (Exception $e) {
                 return response()->json($e->getMessage(), 500);

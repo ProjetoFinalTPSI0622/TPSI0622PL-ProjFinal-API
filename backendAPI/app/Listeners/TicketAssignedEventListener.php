@@ -3,16 +3,15 @@
 namespace App\Listeners;
 
 use App\Handlers\NotificationDataHandler;
-use App\Mail\TicketStatusMail;
+use App\Mail\TicketCreatedMail;
 use App\Notification;
 use App\NotificationRecipient;
-use App\Tickets;
 use App\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
-class TicketStatusChangedListener
+class TicketAssignedEventListener
 {
     /**
      * Create the event listener.
@@ -23,32 +22,33 @@ class TicketStatusChangedListener
     {
         //
     }
+
     /**
      * Handle the event.
      *
      * @param  object  $event
      * @return void
      */
-    public function handle(object $event)
+    public function handle($event)
     {
-        $notificationData = $this->handleData($event->ticket);
-        $notificationId = $this->saveNotification($notificationData);
-        $this->notifyRecipients($notificationId, $notificationData['recipients']);
+        $ticket = $this->handleData($event->ticket);
+
+        $notificationId = $this->saveNotification($ticket);
+
+        $this->notifyRecipients($notificationId, $ticket['recipients']);
 
         $this->sendEmail($event->ticket);
     }
 
-    public function saveNotification($notificationData)
-    {
+    public function saveNotification($notificationData) {
         $notification = new Notification();
         $notification->notification_data = json_encode($notificationData['data']);
         $notification->save();
         return $notification->id;
     }
 
-    protected function notifyRecipients($notificationId, $recipients)
-    {
-        foreach ($recipients as $recipient) {
+    protected function notifyRecipients($notificationId, $recipients){
+        foreach($recipients as $recipient){
             $notificationRecipient = new NotificationRecipient();
             $notificationRecipient->notification_id = $notificationId;
             $notificationRecipient->user_id = $recipient['id'];
@@ -58,22 +58,19 @@ class TicketStatusChangedListener
 
     public function sendEmail($ticket)
     {
-        $ticket->load('createdby');
+        $ticket->load('assignedto', 'createdby');
+        $ticket = json_decode($ticket, true);
 
-        $users = User::whereHas('roles', function ($q) {
-            $q->where('name', 'admin');
-        })->get();
+        Mail::to('fabiomiguel3.10@gmail.com')->queue(new TicketCreatedMail($ticket));
 
-        Mail::to('fabiomiguel3.10@gmail.com')->send(new TicketStatusMail($ticket));
+        Mail::to($ticket['assignedto']['email'])->queue(new TicketCreatedMail($ticket));
+        Mail::to($ticket['createdby']['email'])->queue(new TicketCreatedMail($ticket));
 
-        foreach ($users as $user) {
-            Mail::to($user->email)->queue(new TicketStatusMail($ticket));
-        }
     }
 
     public function handleData($ticket): array
     {
         $handler = new NotificationDataHandler();
-        return $handler->handleNotificationData('ticketStatusUpdated', $ticket);
+        return $handler->handleNotificationData('ticket_assigned', $ticket);
     }
 }

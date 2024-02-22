@@ -7,11 +7,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class TicketCreatedMail extends Mailable
+class TicketAssignedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-public $ticket;
+    public $ticket;
 
     /**
      * Create a new message instance.
@@ -30,13 +30,12 @@ public $ticket;
      */
     public function build()
     {
-
         //TODO:
         // change from to something like CESAEDESK <email>
-        return $this->markdown('emails.ticket-created')
-                    ->subject('Ticket # ' . $this->ticket->id . ' - ' . $this->ticket->title)
-                    ->with([
-                        'ticket' => $this->ticket,
-                    ]);
+        return $this->markdown('emails.ticket-assigned')
+            ->subject('Ticket # ' . $this->ticket['id'] . ' - ' . $this->ticket['title'])
+            ->with([
+                'ticket' => $this->ticket,
+            ]);
     }
 }

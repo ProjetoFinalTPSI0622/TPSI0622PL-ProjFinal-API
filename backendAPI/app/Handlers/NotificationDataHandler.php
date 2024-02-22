@@ -53,12 +53,10 @@ class NotificationDataHandler
                 $this->recipientList->addSpecificUser($eventData['createdby']['id']);
                 break;
 
-            case 'ticketAssigned':
+            case 'ticket_assigned':
                 $this->data['ticket'] = $eventData;
-                $this->data['assigned_to'] = $eventData['assignedto']['name'];
-                $this->recipientList->addAssignedTechnician($eventData['assignedto']['id']);
-                $this->recipientList->addAllAdmins();
-                $this->recipientList->addSpecificUser($eventData['createdby']['id']);
+                $this->recipientList->addAssignedTechnician($eventData['assignedto']);
+                $this->recipientList->addSpecificUser($eventData['createdby']);
                 break;
 
             default:
