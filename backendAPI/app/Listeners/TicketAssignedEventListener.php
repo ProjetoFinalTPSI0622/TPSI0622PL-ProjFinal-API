@@ -6,13 +6,12 @@ use App\Handlers\NotificationDataHandler;
 use App\Mail\TicketCreatedMail;
 use App\Notification;
 use App\NotificationRecipient;
-use App\Tickets;
 use App\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
 
-class TicketCreatedEventListener
+class TicketAssignedEventListener
 {
     /**
      * Create the event listener.
@@ -30,7 +29,7 @@ class TicketCreatedEventListener
      * @param  object  $event
      * @return void
      */
-    public function handle(object $event)
+    public function handle($event)
     {
         $ticket = $this->handleData($event->ticket);
 
@@ -38,7 +37,6 @@ class TicketCreatedEventListener
 
         $this->notifyRecipients($notificationId, $ticket['recipients']);
 
-        //TODO: UNCOMMENT THIS IN PROD TO NOT WASTE EMAIL QUOTA DURING TESTS
         $this->sendEmail($event->ticket);
     }
 
@@ -60,23 +58,19 @@ class TicketCreatedEventListener
 
     public function sendEmail($ticket)
     {
-        $ticket->load('createdby');
-
-        $users = User::whereHas('roles', function($q){
-            $q->where('name', 'admin');
-        })->get();
+        $ticket->load('assignedto', 'createdby');
+        $ticket = json_decode($ticket, true);
 
         Mail::to('fabiomiguel3.10@gmail.com')->queue(new TicketCreatedMail($ticket));
 
-        foreach($users as $user){
-            Mail::to($user->email)->queue(new TicketCreatedMail($ticket));
-        }
+        Mail::to($ticket['assignedto']['email'])->queue(new TicketCreatedMail($ticket));
+        Mail::to($ticket['createdby']['email'])->queue(new TicketCreatedMail($ticket));
 
     }
 
     public function handleData($ticket): array
     {
         $handler = new NotificationDataHandler();
-        return $handler->handleNotificationData('ticket_created', $ticket);
+        return $handler->handleNotificationData('ticket_assigned', $ticket);
     }
 }
