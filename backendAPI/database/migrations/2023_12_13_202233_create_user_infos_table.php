@@ -20,7 +20,7 @@ class CreateUserInfosTable extends Migration
             $table->date('birthday_date');
             $table->foreignId('gender_id')->nullable()->references('id')->on('genders')->onDelete('cascade')->onUpdate('cascade');
             $table->string('profile_picture_path');
-            $table->integer('phone_number')->nullable();
+            $table->string('phone_number')->nullable();
             $table->string('address')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('city')->nullable();

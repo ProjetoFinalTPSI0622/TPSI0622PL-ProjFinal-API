@@ -16,7 +16,9 @@ use App\Http\Requests\TicketShowRequest;
 use App\Mail\TicketCreatedMail;
 use App\Notifications\ticketCreated;
 use App\Statuses;
+use App\Priorities;
 use App\Tickets;
+use App\UserInfo;
 use App\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -41,29 +43,28 @@ class TicketsController extends Controller
      */
     public function index()
     {
-        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
             try {
 
-                $tickets = Tickets::with('createdby', 'assignedto', 'status', 'category', 'priority')->get();
+                $tickets = Tickets::with(['createdby' => function($query) {
+                    $query->with('userInfo');
+                }, 'assignedto', 'status', 'category', 'priority'])
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                    ->toArray();
 
+                foreach($tickets as &$ticket) {
+
+                $ticket['createdby']['user_info']['profile_picture_path'] = Storage::disk('public')->url($ticket['createdby']['user_info']['profile_picture_path']);
+                }
+
+                json_encode($tickets);
                 // Return the list of users
                 return response()->json($tickets, 200);
             } catch (Exception $e) {
                 // Handle exceptions if any
                 return response()->json($e->getMessage(), 500);
             }
-        } else {
 
-            try{
-
-                $tickets = Tickets::where('createdby', Auth::guard('api')->user()->id)->get();
-                $tickets->load('createdby', 'assignedto', 'status', 'category', 'priority');
-                return response()->json($tickets, 200);
-
-            } catch (Exception $e) {
-                return response()->json($e->getMessage(), 500);
-            }
-        }
     }
 
     public function userTickets()
@@ -313,6 +314,26 @@ class TicketsController extends Controller
                 $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
                 $ticket['updated_by'] = Auth::guard('api')->user();
                 event(new TicketStatusChangedEvent($ticket));
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            return response()->json($ticket, 200);
+        } else {
+            return response()->json('Not enough permissions', 400);
+        }
+    }
+
+    public function changePriority(Tickets $ticket, Priorities $priority)
+    {
+        if(Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+            try{
+                $ticket->priority = $priority->id;
+                $ticket->save();
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            try{
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
             } catch (Exception $e) {
                 return response()->json($e->getMessage(), 500);
             }

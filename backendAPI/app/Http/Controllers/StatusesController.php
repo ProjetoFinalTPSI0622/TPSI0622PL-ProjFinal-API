@@ -87,6 +87,7 @@ class StatusesController extends Controller
      */
     public function destroy(Statuses $status)
     {
+        \Log::info($status);
         if (Auth::guard("api")->check()) {
             if (Auth::guard("api")->user()->hasRole("admin")) {
                 try {

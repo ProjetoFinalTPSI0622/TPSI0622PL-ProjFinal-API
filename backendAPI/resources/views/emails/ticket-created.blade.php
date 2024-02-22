@@ -388,8 +388,7 @@
                                                                                                                                             width="117"
                                                                                                                                             height="60.78125"
                                                                                                                                             alt=""
-                                                                                                                                            TODO:= " STILL NEEDS CORRECT IMAGE URL"
-                                                                                                                                            src="{{ asset('assets/logo.png') }}" />
+                                                                                                                                            src="https://uploads.tabular.email/e/73f06dfb-aaf3-4998-b946-32b7d016e04c/e2804575-6de9-46fd-a3fc-53444076615d.png" />
                                                                                                                                     </div>
                                                                                                                                 </td>
                                                                                                                             </tr>

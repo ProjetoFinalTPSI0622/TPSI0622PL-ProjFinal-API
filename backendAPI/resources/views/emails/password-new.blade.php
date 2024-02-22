@@ -388,8 +388,7 @@
                                                                                                                                             width="117"
                                                                                                                                             height="60.78125"
                                                                                                                                             alt=""
-                                                                                                                                            TODO:= " STILL NEEDS CORRECT IMAGE URL"
-                                                                                                                                            src="{{ asset('assets/logo.png') }}" />
+                                                                                                                                            src="https://uploads.tabular.email/e/73f06dfb-aaf3-4998-b946-32b7d016e04c/e2804575-6de9-46fd-a3fc-53444076615d.png" />
                                                                                                                                     </div>
                                                                                                                                 </td>
                                                                                                                             </tr>
@@ -467,16 +466,19 @@
                                                                                                                         style="width:480px;">
                                                                                                                         <p class="t79"
                                                                                                                             style="margin:0;Margin:0;font-family:BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,'Inter';line-height:28px;font-weight:500;font-style:normal;font-size:21px;text-decoration:none;text-transform:none;direction:ltr;color:#333333;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
-                                                                                                                            O
-                                                                                                                            &quot;ticket
-                                                                                                                            #{{ $ticket->id }}
-                                                                                                                            -
-                                                                                                                            {{ $ticket->title }}&quot;
-                                                                                                                            acabou
-                                                                                                                            de
-                                                                                                                            mudar
-                                                                                                                            de
-                                                                                                                            estado para <strong> {{ $ticket->status }} </strong> .
+                                                                                                                            A
+                                                                                                                            sua
+                                                                                                                            password
+                                                                                                                            foi
+                                                                                                                            alterada,
+                                                                                                                            a
+                                                                                                                            sua
+                                                                                                                            nova
+                                                                                                                            password
+                                                                                                                            é:
+                                                                                                                            "
+                                                                                                                            monengue
+                                                                                                                            "
                                                                                                                         </p>
                                                                                                         </td>
                                                                                                     </tr>
@@ -502,11 +504,9 @@
                                                                                                             style="width:480px;">
                                                                                                             <p class="t89"
                                                                                                                 style="margin:0;Margin:0;font-family:BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,'Inter';line-height:23px;font-weight:400;font-style:normal;font-size:16px;text-decoration:none;text-transform:none;direction:ltr;color:#545454;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
-                                                                                                                Pode ver
-                                                                                                                os
-                                                                                                                detalhes
-                                                                                                                desse
-                                                                                                                ticket
+                                                                                                                Pode
+                                                                                                                iniciar
+                                                                                                                sessão
                                                                                                                 clicando
                                                                                                                 no botão
                                                                                                                 a baixo:
@@ -536,8 +536,8 @@
                                                                                                             <a class="t109"
                                                                                                                 href="https://tabular.email"
                                                                                                                 style="display:block;margin:0;Margin:0;font-family:BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,'Inter';line-height:50px;font-weight:600;font-style:normal;font-size:18px;text-decoration:none;direction:ltr;color:#FFFFFF;text-align:center;mso-line-height-rule:exactly;mso-text-raise:10px;"
-                                                                                                                target="_blank">VER
-                                                                                                                TICKET</a>
+                                                                                                                target="_blank">Iniciar
+                                                                                                                sessão</a>
                                                                                                         </td>
                                                                                                     </tr>
                                                                                                 </table>
