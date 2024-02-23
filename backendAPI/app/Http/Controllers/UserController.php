@@ -202,8 +202,9 @@ class UserController extends Controller
         try {
             $user = Auth::guard('api')->user();
 
-
             $user->load('roles', 'userInfo');
+
+            $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
 
             return response()->json($user, 200);
         } catch (Exception $e) {
