@@ -20,6 +20,7 @@ class NotifyPasswordReset extends Mailable
      */
     public function __construct($user)
     {
+        \Log::info($user);
         $this->user = $user;
     }
 
@@ -30,7 +31,7 @@ class NotifyPasswordReset extends Mailable
      */
     public function build()
     {
-        return $this->markdown('emails.notify-password-reset')
+        return $this->markdown('emails.password-new')
             ->subject('Your password has been reset')
             ->with([
                 'user' => $this->user,

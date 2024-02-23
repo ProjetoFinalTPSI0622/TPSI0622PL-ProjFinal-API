@@ -14,9 +14,8 @@ class NotifyPasswordResetListener
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct()
     {
-        $this->user = $user;
     }
 
     /**
@@ -25,14 +24,17 @@ class NotifyPasswordResetListener
      * @param  object  $event
      * @return void
      */
-    public function handle($event)
+    public function handle(object $event)
     {
         $user = $event->user;
         $this->sendPasswordResetMail($user->email);
+
     }
 
     public function sendPasswordResetMail($userEmail)
     {
-        Mail::to($userEmail)->send(new NotifyPasswordReset());
+
+        Mail::to($userEmail)->queue(new NotifyPasswordReset($userEmail));
+        //\Log::info($userEmail);
     }
 }
