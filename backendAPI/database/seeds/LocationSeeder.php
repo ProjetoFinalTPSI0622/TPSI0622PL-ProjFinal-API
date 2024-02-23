@@ -11,16 +11,10 @@ class LocationSeeder extends Seeder
      */
     public function run()
     {
-        $locationsList = [
-            'Porto',
-            'Lisboa',
-            'Faro',
-        ];
-
-        foreach($locationsList as $location){
-            DB::table('locations')->insert([
-                'name' => $location,
-            ]);
-        }
+        DB::table('categories')->insert([
+            ['name' => 'Porto'],
+            ['name' => 'Lisboa'],
+            ['name' => 'Faro'],
+        ]);
     }
 }
