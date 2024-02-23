@@ -22,5 +22,6 @@ class DatabaseSeeder extends Seeder
         $this->call(UserInfoSeeder::class);
         $this->call(CommentTypesSeeder::class);
         $this->call(TicketsSeeder::class);
+        $this->call(LocationSeeder::class);
     }
 }
