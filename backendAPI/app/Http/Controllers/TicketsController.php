@@ -238,9 +238,19 @@ class TicketsController extends Controller
     public function ticketComments(Tickets $ticket)
     {
         try {
-            $ticket->load('comments.user.userInfo', 'comments.attachments');
+            $ticket->load('comments.user.userInfo', 'comments.attachments', 'comments.commentType');
 
-            foreach ($ticket->comments as $comment) {
+            $user = Auth::guard('api')->user();
+            $userIsAdminOrTechnician = $user->hasRole('admin') || $user->hasRole('technician');
+
+            $comments = $ticket->comments->filter(function ($comment) use ($userIsAdminOrTechnician) {
+                if ($userIsAdminOrTechnician) {
+                    return true;
+                }
+                return $comment->commentType->name === 'Public';
+            });
+
+            foreach ($comments as $comment) {
                 if ($comment->user && $comment->user->userInfo) {
                     $path = $comment->user->userInfo->profile_picture_path;
                     if (!Str::startsWith($path, 'http')) {
@@ -256,10 +266,13 @@ class TicketsController extends Controller
                 }
             }
 
+            $response = $ticket->toArray();
+            $response['comments'] = $comments->values()->toArray();
+
         } catch (Exception $e) {
             return response()->json($e->getMessage(), 500);
         }
-        return response()->json($ticket, 200);
+        return response()->json($response, 200);
     }
 
 
