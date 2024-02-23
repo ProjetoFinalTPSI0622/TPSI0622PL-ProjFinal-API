@@ -11,7 +11,7 @@ class LocationSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('categories')->insert([
+        DB::table('locations')->insert([
             ['name' => 'Porto'],
             ['name' => 'Lisboa'],
             ['name' => 'Faro'],
