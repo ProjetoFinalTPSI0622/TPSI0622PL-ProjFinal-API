@@ -7,6 +7,7 @@ use App\Http\Requests\UserLoginRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\User;
 
 class AuthenticationController extends Controller
 {
@@ -75,9 +76,9 @@ class AuthenticationController extends Controller
         }
     }
 
-    public function forgotPassword(){
+    public function forgotPassword(Request $request){
         try {
-            $user = Auth::guard('api')->user();
+            $user = User::where('email', $request->email)->first();
 
             event(new PasswordResetEvent($user));
 
