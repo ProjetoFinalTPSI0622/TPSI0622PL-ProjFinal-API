@@ -29,6 +29,7 @@ class TicketCreateRequest extends FormRequest
                 'description' => 'required|string|max:1000',
                 'priority' => 'required|exists:priorities,id',
                 'category' => 'required|exists:categories,id',
+                'location' => 'required|exists:locations,id',
             ];
     }
 
@@ -45,6 +46,8 @@ class TicketCreateRequest extends FormRequest
             'priority.exists' => 'The priority must be a valid priority',
             'category.required' => 'A category is required',
             'category.exists' => 'The category must be a valid category',
+            'location.required' => 'A location is required',
+            'location.exists' => 'The location must be a valid location',
         ];
     }
 }

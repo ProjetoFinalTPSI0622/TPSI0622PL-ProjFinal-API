@@ -22,6 +22,7 @@ class CreateTicketsTable extends Migration
             $table->unsignedBigInteger('status');
             $table->unsignedBigInteger('priority');
             $table->unsignedBigInteger('category');
+            $table->unsignedBigInteger('location');
             $table->dateTime('closed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -32,6 +33,7 @@ class CreateTicketsTable extends Migration
             $table->foreign('status')->references('id')->on('statuses');
             $table->foreign('priority')->references('id')->on('priorities');
             $table->foreign('category')->references('id')->on('categories');
+            $table->foreign('location')->references('id')->on('locations');
         });
     }
 
