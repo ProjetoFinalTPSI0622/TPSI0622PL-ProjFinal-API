@@ -16,11 +16,16 @@ class LocationController extends Controller
      */
     public function index()
     {
-        try {
-            $locations = Location::all();
-            return response()->json($locations, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
+        if (Auth::guard('api')->check()) {
+            try {
+                $locations = Location::all();
+                return response()->json($locations, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+        } else {
+            // Return unauthorized response if not authenticated
+            return response()->json("Not Enough Permissions", 401);
         }
     }
 
