@@ -12,9 +12,9 @@ class PrioritiesSeeder extends Seeder
     public function run()
     {
         DB::table('priorities')->insert([
-            ['name' => 'Low'],
-            ['name' => 'Medium'],
-            ['name' => 'High'],
+            ['name' => 'Baixa'],
+            ['name' => 'Média'],
+            ['name' => 'Alta'],
         ]);
     }
 }
