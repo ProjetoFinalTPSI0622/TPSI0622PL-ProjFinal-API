@@ -15,7 +15,7 @@ class PrioritiesController extends Controller
      */
     public function index()
     {
-        if (Auth::guard('api')->user()->hasRole('admin')) {
+        if (Auth::guard('api')->check()) {
 
             try {
                 $priorities = Priorities::all();
@@ -25,8 +25,7 @@ class PrioritiesController extends Controller
             }
 
         } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not Enough Permissions", 401);
+            return response()->json("Not authenticated", 401);
         }
     }
 

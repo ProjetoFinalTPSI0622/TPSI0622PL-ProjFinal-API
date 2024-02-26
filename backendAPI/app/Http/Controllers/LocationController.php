@@ -16,18 +16,16 @@ class LocationController extends Controller
      */
     public function index()
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-
+        if (Auth::guard('api')->check()) {
             try {
                 $locations = Location::all();
                 return response()->json($locations, 200);
             } catch (Exception $exception) {
                 return response()->json(['error' => $exception], 500);
             }
-
         } else {
             // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json("Not Enough Permissions", 401);
         }
     }
 
@@ -39,23 +37,18 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+        if (Auth::guard('api')->user()->hasRole('admin')) {
 
-                try {
-                    $location = Location::create($request->all());
-                    return response()->json($location, 201);
-                } catch (Exception $exception) {
-                    return response()->json(['error' => $exception], 500);
-                }
-
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
+            try {
+                $location = Location::create($request->all());
+                return response()->json($location, 201);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
             }
+
         } else {
             // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json("Not Enough Permissions", 401);
         }
     }
 
@@ -65,21 +58,6 @@ class LocationController extends Controller
      * @param  \App\Location  $location
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Location $location)
-    {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-
-            try {
-                return response()->json($location, 200);
-            } catch (Exception $exception) {
-                return response()->json(['error' => $exception], 500);
-            }
-
-        } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
-        }
-    }
 
     /**
      * Update the specified resource in storage.
@@ -90,7 +68,18 @@ class LocationController extends Controller
      */
     public function update(Request $request, Location $location)
     {
-        //
+        if (Auth::guard('api')->user()->hasRole('admin')) {
+
+            try {
+                $location->update($request->all());
+                return response()->json($location, 200);
+            } catch (Exception $exception) {
+                return response()->json(['error' => $exception], 500);
+            }
+
+        } else { // Return unauthorized response if not authenticated
+            return response()->json("Not Enough Permissions", 401);
+        }
     }
 
     /**

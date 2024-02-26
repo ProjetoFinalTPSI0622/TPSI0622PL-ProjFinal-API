@@ -52,7 +52,7 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
 
     Route::put('{ticket}/status/{status}', 'TicketsController@changeStatus');
     Route::put('{ticket}/priority/{priority}', 'TicketsController@changePriority');
-    
+
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');
     Route::get('/{ticket}', 'TicketsController@show');
@@ -88,7 +88,7 @@ Route::group(['prefix' => 'priorities', 'middleware' => 'checkAuth'], function()
 Route::group(['prefix' => 'statuses', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'StatusesController@index');
     Route::post('/', 'StatusesController@store');
-    Route::put('/{id}', 'StatusesController@update');
+    Route::put('/{status}', 'StatusesController@update');
     Route::delete('/{status}', 'StatusesController@destroy');
 });
 
@@ -96,16 +96,16 @@ Route::group(['prefix' => 'statuses', 'middleware' => 'checkAuth'], function() {
 Route::group(['prefix' => 'categories', 'middleware' => 'checkAuth'], function() {
     Route::get('/', 'CategoriesController@index');
     Route::post('/', 'CategoriesController@store');
-    Route::put('/{id}', 'CategoriesController@update');
-    Route::delete('/{id}', 'CategoriesController@destroy');
+    Route::put('/{category}', 'CategoriesController@update');
+    Route::delete('/{category}', 'CategoriesController@destroy');
 });
 
 // -----------------------------------------------------------------LOCATIONS ROUTES-----------------------------------------------------------------
 Route::group(['prefix' => 'locations', 'middleware' => 'checkAuth'], function() {
-    Route::get('/', 'LocationsController@index');
-    Route::post('/', 'LocationsController@store');
-    Route::put('/{id}', 'LocationsController@update');
-    Route::delete('/{id}', 'LocationsController@destroy');
+    Route::get('/', 'LocationController@index');
+    Route::post('/', 'LocationController@store');
+    Route::put('/{location}','LocationController@update');
+    Route::delete('/{location}', 'LocationController@destroy');
 });
 
 // -----------------------------------------------------------------NOTIFICATIONS ROUTES-----------------------------------------------------------------

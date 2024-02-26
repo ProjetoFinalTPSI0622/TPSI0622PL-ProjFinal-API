@@ -16,7 +16,7 @@ use App\Listeners\PasswordResetEventListener;
 use App\Listeners\TicketAssignedEventListener;
 use App\Listeners\TicketCreatedEventListener;
 use App\Listeners\TicketStatusChangedListener;
-use App\Mail\NotifyPasswordReset;
+use App\Events\NotifyPasswordResetEvent;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -50,7 +50,7 @@ class EventServiceProvider extends ServiceProvider
             PasswordResetEventListener::class,
         ],
 
-        NotifyPasswordReset::class => [
+        NotifyPasswordResetEvent::class => [
             NotifyPasswordResetListener::class,
         ],
 

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Events\NewUserEvent;
 use Illuminate\Support\Facades\Storage;
+use App\Events\NotifyPasswordResetEvent;
 
 
 class UserController extends Controller
@@ -202,8 +203,9 @@ class UserController extends Controller
         try {
             $user = Auth::guard('api')->user();
 
-
             $user->load('roles', 'userInfo');
+
+            $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
 
             return response()->json($user, 200);
         } catch (Exception $e) {
@@ -226,6 +228,7 @@ class UserController extends Controller
 
     public function changePassword(UserChangePasswordRequest $request)
     {
+        \Log::info($request);
         try {
             $validatedData = $request->validated();
             $user = Auth::guard('api')->user();
@@ -259,9 +262,10 @@ class UserController extends Controller
                 $user->setAttribute('password', Hash::make($newPassword));
                 $user->save();
 
-                //TODO: Enviar email com a nova password
+                event(new NotifyPasswordResetEvent($user));
 
                 return response()->json($user, 200);
+
 
             } catch (Exception $e) {
                 return response()->json($e, 500);
@@ -271,4 +275,5 @@ class UserController extends Controller
             return response()->json("Not authorized", 401);
         }
     }
+
 }
