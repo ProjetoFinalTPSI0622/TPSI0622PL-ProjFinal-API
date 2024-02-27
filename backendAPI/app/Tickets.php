@@ -16,6 +16,7 @@ class Tickets extends Model
         'status',
         'priority',
         'category',
+        'location',
     ];
 
     public function createdBy()
@@ -44,6 +45,11 @@ class Tickets extends Model
     public function category()
     {
         return $this->belongsTo(Categories::class, 'category');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location');
     }
 
     public function comments()

@@ -47,7 +47,7 @@ class TicketsController extends Controller
             if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
                 $tickets = Tickets::with(['createdby' => function ($query) {
                     $query->with('userInfo');
-                }, 'assignedto', 'status', 'category', 'priority'])
+                }, 'assignedto', 'status', 'category', 'priority', 'location'])
                     ->orderBy('created_at', 'desc')
                     ->get()
                     ->toArray();
@@ -55,7 +55,7 @@ class TicketsController extends Controller
                 $userId = Auth::guard('api')->user()->id;
                 $tickets = Tickets::with(['createdby' => function ($query) {
                     $query->with('userInfo');
-                }, 'assignedto', 'status', 'category', 'priority'])
+                }, 'assignedto', 'status', 'category', 'priority', 'location'])
                     ->where('createdby', $userId)
                     ->orderBy('created_at', 'desc')
                     ->get()
@@ -82,7 +82,7 @@ class TicketsController extends Controller
         try {
             // Retrieve all tickets
             $tickets = Tickets::where('createdby', Auth::guard('api')->user()->id)->get();
-            $tickets->load('createdby', 'assignedto', 'status', 'category', 'priority');
+            $tickets->load('createdby', 'assignedto', 'status', 'category', 'priority', 'location');
 
             // Return the list of tickets
             return response()->json($tickets, 200);
@@ -112,6 +112,7 @@ class TicketsController extends Controller
                 'status' => 1,
                 'priority' => $validatedData['priority'],
                 'category' => $validatedData['category'],
+                'location' => $validatedData['location'],
             ]);
             try {
 
@@ -135,7 +136,7 @@ class TicketsController extends Controller
                 }
 
                 try {
-                    $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
+                    $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'location' ,'attachments');
                     event(new TicketCreatedEvent($ticket));
                 } catch (\Exception $e) {
                     \Log::error($e->getMessage());
@@ -169,7 +170,7 @@ class TicketsController extends Controller
         }
         try {
 
-            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
+            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'location', 'attachments');
 
             foreach ($ticket->attachments as $attachment) {
                 $attachmentPath = $attachment->FilePath;
@@ -306,7 +307,7 @@ class TicketsController extends Controller
             $ticket->assignedto = $technician->id;
             $ticket->save();
 
-            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'attachments');
+            $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority', 'location', 'attachments');
             event(new TicketAssignedEvent($ticket));
             return response()->json($ticket, 200);
         } else {
@@ -334,7 +335,7 @@ class TicketsController extends Controller
                 return response()->json($e->getMessage(), 500);
             }
             try {
-                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'location','priority');
                 $ticket['updated_by'] = Auth::guard('api')->user();
                 event(new TicketStatusChangedEvent($ticket));
             } catch (Exception $e) {
@@ -356,7 +357,7 @@ class TicketsController extends Controller
                 return response()->json($e->getMessage(), 500);
             }
             try {
-                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'location', 'priority');
             } catch (Exception $e) {
                 return response()->json($e->getMessage(), 500);
             }
@@ -376,7 +377,7 @@ class TicketsController extends Controller
                 return response()->json($e->getMessage(), 500);
             }
             try {
-                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'location', 'priority');
                 event(new TicketStatusChangedEvent($ticket));
             } catch (Exception $e) {
                 return response()->json($e->getMessage(), 500);
@@ -397,7 +398,7 @@ class TicketsController extends Controller
                 return response()->json($e->getMessage(), 500);
             }
             try {
-                $ticket->load('createdby', 'assignedto', 'status', 'category', 'priority');
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'location', 'priority');
                 $ticket['updated_by'] = Auth::guard('api')->user()->id;
                 event(new TicketStatusChangedEvent($ticket));
             } catch (Exception $e) {
