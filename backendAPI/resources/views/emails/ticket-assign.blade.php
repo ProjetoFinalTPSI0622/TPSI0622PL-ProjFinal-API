@@ -468,14 +468,14 @@
                                                                                                                             style="margin:0;Margin:0;font-family:BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,'Inter';line-height:28px;font-weight:500;font-style:normal;font-size:21px;text-decoration:none;text-transform:none;direction:ltr;color:#333333;text-align:left;mso-line-height-rule:exactly;mso-text-raise:2px;">
                                                                                                                             O
                                                                                                                             técnico
-                                                                                                                            {{ $ticket->assignedto }}
+                                                                                                                            {{ $ticket['assignedto']['name'] }}
                                                                                                                             foi
                                                                                                                             assignado
                                                                                                                             ao
                                                                                                                             &quot;ticket
-                                                                                                                            #{{ $ticket->id }}
+                                                                                                                            #{{ $ticket['id'] }}
                                                                                                                             -
-                                                                                                                            {{ $ticket->title }}&quot;
+                                                                                                                            {{ $ticket['title'] }}&quot;
                                                                                                                         </p>
                                                                                                         </td>
                                                                                                     </tr>

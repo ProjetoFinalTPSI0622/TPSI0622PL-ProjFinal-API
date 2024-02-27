@@ -32,7 +32,7 @@ class TicketAssignedMail extends Mailable
     {
         //TODO:
         // change from to something like CESAEDESK <email>
-        return $this->markdown('emails.ticket-assigned')
+        return $this->markdown('emails.ticket-assign')
             ->subject('Ticket # ' . $this->ticket['id'] . ' - ' . $this->ticket['title'])
             ->with([
                 'ticket' => $this->ticket,
