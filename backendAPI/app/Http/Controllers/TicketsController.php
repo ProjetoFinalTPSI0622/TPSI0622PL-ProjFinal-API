@@ -389,7 +389,7 @@ class TicketsController extends Controller
 
     public function reopenTicket(Tickets $ticket)
     {
-        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+        if (Auth::guard('api')->check()) {
             try {
                 $ticket->status = Statuses::where('name', 'Pendente')->first()->id;
                 $ticket->save();
