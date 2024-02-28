@@ -18,17 +18,17 @@ class CreateUserInfosTable extends Migration
             $table->string('class')->nullable();
             $table->integer('nif');
             $table->date('birthday_date');
-            $table->foreignId('gender_id')->references('id')->on('genders')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('gender_id')->nullable()->references('id')->on('genders')->onDelete('cascade')->onUpdate('cascade');
             $table->string('profile_picture_path');
-            $table->integer('phone_number');
-            $table->string('address');
-            $table->string('postal_code');
-            $table->string('city');
-            $table->string('district');
+            $table->string('phone_number')->nullable();
+            $table->string('address')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('city')->nullable();
+            $table->string('district')->nullable();
 
 
 
-            $table->foreignId('country_id')->references('id')->on('countries')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('country_id')->nullable()->references('id')->on('countries')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
             $table->softDeletes();
 

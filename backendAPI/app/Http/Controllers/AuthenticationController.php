@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\PasswordResetEvent;
 use App\Http\Requests\UserLoginRequest;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\User;
 
 class AuthenticationController extends Controller
 {
@@ -49,7 +51,10 @@ class AuthenticationController extends Controller
     public function checkAuth(Request $request){
         try {
             if(Auth::guard('api')->check()){
-                return response()->json(['auth' => true], 200);
+
+                $roles = Auth::guard('api')->user()->roles;
+
+                return response()->json(['auth' => true, 'roles' => $roles], 200);
             }
             else {
                 return response()->json(['auth' => false], 200);
@@ -65,6 +70,19 @@ class AuthenticationController extends Controller
             $user = Auth::guard('api')->user();
             $user->tokens()->delete();
             return response()->json(['message' => 'Logged Out'], 200);
+        }
+        catch (Exception $e) {
+            return response()->json($e, 500);
+        }
+    }
+
+    public function forgotPassword(Request $request){
+        try {
+            $user = User::where('email', $request->email)->first();
+
+            event(new PasswordResetEvent($user));
+
+            return response()->json(['message' => 'Password Reset Email Sent'], 200);
         }
         catch (Exception $e) {
             return response()->json($e, 500);

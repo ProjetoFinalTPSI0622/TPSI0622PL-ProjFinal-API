@@ -33,11 +33,13 @@ class TicketCreatedEventListener
     public function handle(object $event)
     {
         $ticket = $this->handleData($event->ticket);
+
         $notificationId = $this->saveNotification($ticket);
+
         $this->notifyRecipients($notificationId, $ticket['recipients']);
 
         //TODO: UNCOMMENT THIS IN PROD TO NOT WASTE EMAIL QUOTA DURING TESTS
-        //$this->sendEmail($event->ticket);
+        $this->sendEmail($event->ticket);
     }
 
     public function saveNotification($notificationData) {
@@ -64,11 +66,12 @@ class TicketCreatedEventListener
             $q->where('name', 'admin');
         })->get();
 
-        /*Mail::to('fabiomiguel3.10@gmail.com')->send(new TicketCreatedMail($ticket));
+        Mail::to('fabiomiguel3.10@gmail.com')->queue(new TicketCreatedMail($ticket));
 
         foreach($users as $user){
-            Mail::to($user->email)->send(new TicketCreatedMail($ticket));
-        }*/
+            Mail::to($user->email)->queue(new TicketCreatedMail($ticket));
+        }
+
     }
 
     public function handleData($ticket): array

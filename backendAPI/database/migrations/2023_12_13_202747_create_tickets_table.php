@@ -15,21 +15,25 @@ class CreateTicketsTable extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('createdby');
+            $table->unsignedBigInteger('createdby')->nullable();
             $table->unsignedBigInteger('assignedto')->nullable();
             $table->string('title');
             $table->text('description');
             $table->unsignedBigInteger('status');
             $table->unsignedBigInteger('priority');
             $table->unsignedBigInteger('category');
+            $table->unsignedBigInteger('location');
+            $table->dateTime('closed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('createdby')->references('id')->on('users');
-            $table->foreign('assignedto')->references('id')->on('users');
+            $table->foreign('createdby')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('assignedto')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
+
             $table->foreign('status')->references('id')->on('statuses');
             $table->foreign('priority')->references('id')->on('priorities');
             $table->foreign('category')->references('id')->on('categories');
+            $table->foreign('location')->references('id')->on('locations');
         });
     }
 

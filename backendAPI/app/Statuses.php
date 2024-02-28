@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Statuses extends Model
 {
     protected $fillable = [
-        'status_name'
+        'name',
+        'color'
     ];
     public function tickets()
     {

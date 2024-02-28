@@ -32,11 +32,9 @@ public $ticket;
     {
 
         //TODO:
-        // change subject to something like Ticket ticket_id CREATED
         // change from to something like CESAEDESK <email>
-        //format a better looking markdown
         return $this->markdown('emails.ticket-created')
-                    ->subject('New Ticket Created - Ticket ID: ' . $this->ticket->id)
+                    ->subject('Ticket # ' . $this->ticket->id . ' - ' . $this->ticket->title)
                     ->with([
                         'ticket' => $this->ticket,
                     ]);

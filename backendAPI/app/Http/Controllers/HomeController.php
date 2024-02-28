@@ -13,7 +13,6 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
     }
 
     /**
@@ -23,6 +22,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $ticket = \App\Tickets::find(1);
+        $ticket->load('createdby', 'assignedto', 'comments', 'status', 'priority', 'category' );
+        return view('emails.ticket-created')->with('ticket', $ticket);
     }
 }

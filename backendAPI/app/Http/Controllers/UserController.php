@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GetAuthedUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UserChangePasswordRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\User;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use App\Events\NewUserEvent;
 use Illuminate\Support\Facades\Storage;
+use App\Events\NotifyPasswordResetEvent;
 
 
 class UserController extends Controller
@@ -28,31 +30,24 @@ class UserController extends Controller
      */
     public function index()
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
-                try {
-                    // Retrieve all users
-                    $users = User::with('userInfo')->get();
+        if (Auth::guard('api')->user()->hasRole('admin')) {
+            try {
+                // Retrieve all users
+                $users = User::with('userInfo')->get();
 
-//
-//                      TODO:please dont leave code that doesnt work and crash the program
-//                        $users->each(function ($user) {
-//                        $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
-//                    });
+                $users->each(function ($user) {
+                    $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
+                });
 
-                    // Return the list of users
-                    return response()->json($users, 200);
-                } catch (Exception $e) {
-                    // Handle exceptions if any
-                    return response()->json($e->getMessage(), 500);
-                }
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
+                // Return the list of users
+                return response()->json($users, 200);
+            } catch (Exception $e) {
+                // Handle exceptions if any
+                return response()->json($e->getMessage(), 500);
             }
         } else {
             // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json("Not Enough Permissions", 401);
         }
     }
 
@@ -65,44 +60,48 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        if ($request->get('role') != null) {
-            $role = Roles::where('id', $request->get('role'))->first();
-        } else {
-            $role = Roles::where('name', 'user')->first();
-        }
+        if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
 
-        try {
-
-            $validatedData = $request->validated();
-
-            try{
-                $user = new User([
-                    'name' => $validatedData['name'],
-                    'email' => $validatedData['email'],
-                    'password' => Hash::make($validatedData['password']),
-                    'internalcode' => $validatedData['internalcode'],
-                ]);
-            } catch (Exception $e) {
-                return response()->json($e->getMessage(), 500);
+            if ($request->get('role') != null) {
+                $role = Roles::where('id', $request->get('role'))->first();
+            } else {
+                $role = Roles::where('name', 'user')->first();
             }
 
-            $user->setAttribute('normalized_name', strtoupper($validatedData['name']));
+            try {
 
-            $user->save();
-            $user->roles()->attach($role);
+                $validatedData = $request->validated();
 
-            return response()->json($user->id, 200);
+                try {
+                    $user = new User([
+                        'name' => $validatedData['name'],
+                        'email' => $validatedData['email'],
+                        'password' => Hash::make($validatedData['password']),
+                        'internalcode' => $validatedData['internalcode'],
+                    ]);
+                } catch (Exception $e) {
+                    return response()->json($e->getMessage(), 500);
+                }
 
-        } catch (Exception $e) {
+                $user->setAttribute('normalized_name', strtoupper($validatedData['name']));
 
-            return response()->json($e->getMessage(), 500);
+                $user->save();
+                $user->roles()->attach($role);
+
+                return response()->json($user->id, 200);
+
+            } catch (Exception $e) {
+
+                return response()->json($e->getMessage(), 500);
+            }
+        } else {
+            return response()->json("Not authorized", 401);
         }
-
     }
 
     public function show(User $user)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
+        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $user->id) {
             try {
                 $user->load('userInfo', 'roles');
                 //converter data na formato d-m-Y
@@ -113,7 +112,7 @@ class UserController extends Controller
                 return response()->json($e, 500);
             }
         } else {
-            return response()->json("Not logged in", 401);
+            return response()->json("Not authorized", 401);
         }
     }
 
@@ -124,30 +123,23 @@ class UserController extends Controller
      * @param \App\User $user
      * @return JsonResponse
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
+        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $user->id) {
             try {
-                $validatedData = $request->validate([
-                    'name' => 'required|max:255',
-                    'email' => 'required|max:255',
-                    'internalcode' => 'required|max:255',
-                ]);
+
+                $validatedData = $request->validated();
 
                 $roles = Roles::query()->where('id', $request->get('role'))->get();
-
-
                 $user->roles()->sync($roles);
-                \Log::info($user);
-
                 $user->update($validatedData);
+
                 return response()->json($user, 200);
             } catch (Exception $e) {
-                return response()->json($e, 500);
+                return response()->json($e->getMessage(), 500);
             }
-
         } else {
-            return response()->json("Not logged in", 401);
+            return response()->json("Not authorized", 401);
         }
     }
 
@@ -159,33 +151,29 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-           // if (Auth::user()->hasRole('admin')) { // Check if user is admin
+        if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
 
-                try {
-                    $user->roles()->detach();
+            try {
+                $user->roles()->detach();
 
-                    if ($user->userInfo) {
-                        $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
-                        if ($user->userInfo->profile_picture_path != $defaultImagePath) {
-                            Storage::disk('public')->delete($user->userInfo->profile_picture_path);
-                        }
-
-                        UserInfo::deleted($user->userInfo);
+                if ($user->userInfo) {
+                    $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
+                    if ($user->userInfo->profile_picture_path != $defaultImagePath) {
+                        Storage::disk('public')->delete($user->userInfo->profile_picture_path);
                     }
 
-                    $user->delete();
-
-                    return response()->json(['message' => 'User deleted'], 200);
-                } catch (Exception $e) {
-                    return response()->json($e->getMessage(), 500);
+                    UserInfo::deleted($user->userInfo);
                 }
 
-           // } else {
-           //     return response()->json("Not authorized", 401);
-           // }
+                $user->delete();
+
+                return response()->json(['message' => 'User deleted'], 200);
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+
         } else {
-            return response()->json("Not logged in", 401);
+            return response()->json("Not authorized", 401);
         }
     }
 
@@ -195,33 +183,32 @@ class UserController extends Controller
      */
     public function search(Request $request) //search by either id name or email
     {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::user()->hasRole('user')) { // Check if user is admin
-                try {
-                    $search = $request->get('search');
-                    $users = User::where('name', 'LIKE', '%' . $search . '%') //search by either name or email
-                    ->orWhere('email', 'LIKE', '%' . $search . '%')
-                        ->get();
-                    return response()->json($users, 200);
-                } catch (Exception $e) {
-                    return response()->json($e, 500);
-                }
-            } else {
-                return response()->json("Not authorized", 401);
+        if (Auth::user()->hasRole('user')) { // Check if user is admin
+            try {
+                $search = $request->get('search');
+                $users = User::where('name', 'LIKE', '%' . $search . '%') //search by either name or email
+                ->orWhere('email', 'LIKE', '%' . $search . '%')
+                    ->get();
+                return response()->json($users, 200);
+            } catch (Exception $e) {
+                return response()->json($e, 500);
             }
         } else {
-            return response()->json("Not logged in", 401);
+            return response()->json("Not authorized", 401);
         }
     }
 
     public function getAuthedUser()
     {
-
         try {
             $user = Auth::guard('api')->user();
+
+            $user->load('roles', 'userInfo');
+
+            $user->userInfo->profile_picture_path = Storage::disk('public')->url($user->userInfo->profile_picture_path);
+
             return response()->json($user, 200);
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             return response()->json($e, 500);
         }
     }
@@ -237,30 +224,56 @@ class UserController extends Controller
         } catch (Exception $e) {
             return response()->json($e, 500);
         }
-
     }
 
     public function changePassword(UserChangePasswordRequest $request)
     {
+        \Log::info($request);
+        try {
+            $validatedData = $request->validated();
+            $user = Auth::guard('api')->user();
+
+            if ($validatedData['currentPassword'] == $validatedData['newPassword']) {
+                return response()->json("New password cannot be the same as the current password", 401);
+            }
+
+            if (!Hash::check($validatedData['currentPassword'], $user->password)) {
+                return response()->json("Current password is incorrect", 401);
+            }
+
+            $user->setAttribute('password', Hash::make($validatedData['newPassword']));
+
+            $user->save();
+            return response()->json($user, 200);
+        } catch (Exception $e) {
+            return response()->json($e, 500);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
+
             try {
-                $validatedData = $request->validated();
-                $user = Auth::guard('api')->user();
 
-                if($validatedData['currentPassword'] == $validatedData['newPassword']){
-                    return response()->json("New password cannot be the same as the current password", 401);
-                }
-
-                if(!Hash::check($validatedData['currentPassword'], $user->password)){
-                    return response()->json("Current password is incorrect", 401);
-                }
-
-                $user->setAttribute('password', Hash::make($validatedData['newPassword']));
-
+                $user = User::find($request->id);
+                $user->load('userInfo');
+                $newPassword = $user->userInfo->nif;
+                $user->setAttribute('password', Hash::make($newPassword));
                 $user->save();
+
+                event(new NotifyPasswordResetEvent($user));
+
                 return response()->json($user, 200);
+
+
             } catch (Exception $e) {
                 return response()->json($e, 500);
             }
+
+        } else {
+            return response()->json("Not authorized", 401);
+        }
     }
 
 }

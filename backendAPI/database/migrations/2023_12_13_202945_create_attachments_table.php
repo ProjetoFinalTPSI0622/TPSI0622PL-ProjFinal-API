@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserSavedResponsesTable extends Migration
+class CreateAttachmentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateUserSavedResponsesTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_saved_responses', function (Blueprint $table) {
+        Schema::create('attachments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-            $table->string('response_text');
+            $table->string('FileName')->nullable();
+            $table->string('FileType')->nullable();
+            $table->string('FilePath');
+            $table->string('FileSize')->nullable();
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -29,6 +30,6 @@ class CreateUserSavedResponsesTable extends Migration
      */
     public function down()
     {
-            Schema::dropIfExists('user_saved_responses');
+        Schema::dropIfExists('attachments');
     }
 }

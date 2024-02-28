@@ -16,6 +16,7 @@ class Tickets extends Model
         'status',
         'priority',
         'category',
+        'location',
     ];
 
     public function createdBy()
@@ -46,8 +47,18 @@ class Tickets extends Model
         return $this->belongsTo(Categories::class, 'category');
     }
 
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location');
+    }
+
     public function comments()
     {
         return $this->hasMany(Comments::class, 'ticket_id');
+    }
+
+    public function attachments()
+    {
+        return $this->belongsToMany(Attachments::class, 'attachment_ticket');
     }
 }

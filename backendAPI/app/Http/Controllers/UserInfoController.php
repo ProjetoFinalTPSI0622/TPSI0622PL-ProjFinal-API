@@ -2,206 +2,165 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserInfoRequest;
 use App\Http\Requests\UserInfoStoreRequest;
+use App\User;
 use App\UserInfo;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class UserInfoController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        try {
-                $userInfos = UserInfo::all();
-                return response()->json($userInfos, 200);
-            } catch (Exception $exception) {
-                return response()->json(['error' => $exception], 500);
-        }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(UserInfoStoreRequest $request)
+    public function store(Request $request)
     {
+        if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
 
-        try {
-            $validatedData = $request->validated();
-            $path = 'defaultImageUsers/DefaultUser.png';
+            $myUser = User::find($request->user_id);
 
-            if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
-                $file = $request->file('avatar');
-                $path = Storage::disk('public')->put('Users', $file);
-            }
+            $messages = [
+                'user_id.required' => 'O id do utilizador é obrigatório',
+                'user_id.integer' => 'O id do utilizador deve ser um número inteiro',
+                'user_id.exists' => 'O id do utilizador não existe',
+                'class.max' => 'A turma deve ter menos de 255 caracteres',
+                'nif.required' => 'O NIF é obrigatório',
+                'nif.unique' => 'O NIF já existe',
+                'nif.regex' => 'O NIF deve ter 9 dígitos',
+                'birthday_date.required' => 'A data de nascimento é obrigatória',
+                'birthday_date.date' => 'A data de nascimento deve ser uma data',
+                'gender.integer' => 'O género deve ser um número inteiro',
+                'gender.exists' => 'O género não existe',
+                'phone_number.regex' => 'O número de telefone deve ter o formato +351123456789 ou 123456789',
+                'address.max' => 'A morada deve ter menos de 255 caracteres',
+                'postal_code.regex' => 'O código postal deve ter o formato 1234-123',
+                'city.max' => 'A cidade deve ter menos de 30 caracteres',
+                'district.max' => 'O distrito deve ter menos de 30 caracteres',
+                'country.integer' => 'O país deve ser um número inteiro',
+                'country.exists' => 'O país não existe',
+            ];
 
-        } catch (Exception $e) {
-            return response()->json($e->getMessage(), 500);
-        }
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id',
+                'class' => 'sometimes|max:255',
+                'nif' => 'required|unique:user_infos|regex:/^[0-9]{9}$/',
+                'birthday_date' => 'required|date',
+                'gender' => 'nullable|integer|exists:genders,id',
+                'phone_number' => ['nullable', 'regex:/^(\+\d{12}|\d{9})$/'],
+                'address' => 'sometimes|max:255',
+                'postal_code' => 'nullable|regex:/^\d{4}-\d{3}$/',
+                'city' => 'sometimes|max:30',
+                'district' => 'sometimes|max:30',
+                'country' => 'nullable|integer|exists:countries,id',
+            ], $messages);
 
-        try {
-            $userInfo = UserInfo::create([
-                'user_id' => $validatedData['user_id'],
-                'class' => $validatedData['class'],
-                'nif' => $validatedData['nif'],
-                'birthday_date' => Carbon::createFromFormat('d-m-Y', $validatedData['birthday_date'])->toDateString(),
-                'gender_id' => $validatedData['gender'],
-                'profile_picture_path' => $path,
-                'phone_number' => $validatedData['phone_number'],
-                'address' => $validatedData['address'],
-                'postal_code' => $validatedData['postal_code'],
-                'city' => $validatedData['city'],
-                'district' => $validatedData['district'],
-                'country_id' => $validatedData['country'],
-            ]);
-
-            return response()->json($userInfo, 200);
-        } catch (Exception $e) {
-            return response()->json($e->getMessage(), 500);
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\UserInfo  $userInfo
-     * @return \Illuminate\Http\Response
-     */
-    public function show(UserInfo $userInfo)
-    {
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
-
-                try {
-                    $userInfo->profile_picture_path = Storage::disk('public')->url($userInfo->profile_picture_path);
-
-                    return response()->json($userInfo, 200);
-                } catch (Exception $exception) {
-                    return response()->json(['error' => $exception], 500);
+            if ($validator->fails()) {
+                if ($myUser != null) {
+                    $myUser->roles()->detach();
+                    $myUser->delete();
                 }
-
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
+                return response()->json([
+                    'message' => 'Os dados segintes estao invalidos.',
+                    'errors' => $validator->errors(),
+                ], 500);
             }
+
+            try {
+                $path = 'defaultImageUsers/DefaultUser.png';
+
+                if ($request->hasFile('avatar') && $request->file('avatar')->isValid()) {
+                    $file = $request->file('avatar');
+                    $path = Storage::disk('public')->put('Users', $file);
+                }
+            } catch (Exception $e) {
+                if ($myUser != null) {
+                    $myUser->roles()->detach();
+                    $myUser->delete();
+                }
+                return response()->json($e->getMessage(), 500);
+            }
+
+            try {
+                $validatedData = $validator->validated();
+
+                $userInfo = UserInfo::create([
+                    'user_id' => $validatedData['user_id'],
+                    'class' => $validatedData['class'] ?? null,
+                    'nif' => $validatedData['nif'],
+                    'birthday_date' => Carbon::createFromFormat('d-m-Y', $validatedData['birthday_date'])->toDateString(),
+                    'gender_id' => $validatedData['gender'] ?? null,
+                    'profile_picture_path' => $path,
+                    'phone_number' => $validatedData['phone_number'] ?? null,
+                    'address' => $validatedData['address'] ?? null,
+                    'postal_code' => $validatedData['postal_code'] ?? null,
+                    'city' => $validatedData['city'] ?? null,
+                    'district' => $validatedData['district'] ?? null,
+                    'country_id' => $validatedData['country'] ?? null,
+                ]);
+
+                return response()->json($userInfo, 200);
+
+            } catch (Exception $e) {
+                if ($myUser != null) {
+                    $myUser->roles()->detach();
+                    $myUser->delete();
+                }
+                return response()->json($e->getMessage(), 500);
+            }
+
         } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json("Not authorized", 401);
         }
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\UserInfo  $userInfo
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(UserInfo $userInfo)
-    {
-        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\UserInfo  $userInfo
+     * @param \Illuminate\Http\Request $request
+     * @param \App\UserInfo $userInfo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, UserInfo $userInfo)
+    public function update(UpdateUserInfoRequest  $request, UserInfo $userInfo)
     {
-        try {
+        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->id == $userInfo->user_id) {
 
-            $request->merge(['birthday_date' => Carbon::createFromFormat('d-m-Y', $request->birthday_date)->toDateString()]);
+                $validatedData = $request->validated();
 
-            $validatedData = $request->validate([
-                'user_id' => 'required|integer',
-                'class' => 'required|string',
-                'nif' => 'required|size:9',
-                'birthday_date' => 'required|date',
-                'gender_id' => 'required|integer',
-                'phone_number' => 'required|max:13',
-                'address' => 'required|max:255',
-                'postal_code' => 'required|max:8',
-                'city' => 'required|max:255',
-                'district' => 'required|max:255',
-                'country_id' => 'required|integer',
-            ]);
+            try {
 
-            if ($request->hasFile('file') && $request->file('file')->isValid()) {
-                $file = $request->file('file');
+                if ($request->hasFile('file') && $request->file('file')->isValid()) {
+                    $file = $request->file('file');
 
-                $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
-                if ($userInfo->profile_picture_path != $defaultImagePath) {
-                    Storage::disk('public')->delete($userInfo->profile_picture_path);
+                    $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
+                    if ($userInfo->profile_picture_path != $defaultImagePath) {
+                        Storage::disk('public')->delete($userInfo->profile_picture_path);
+                    }
+
+                    $path = Storage::disk('public')->put('Users', $file);
+                    $validatedData['profile_picture_path'] = $path;
                 }
+            } catch (Exception $e) {
 
-                $path = Storage::disk('public')->put('Users', $file);
-                $validatedData['profile_picture_path'] = $path;
+                return response()->json($e->getMessage(), 500);
             }
 
             $userInfo->update($validatedData);
 
             return response()->json($userInfo, 200);
-        } catch (Exception $exception) {
-            return response()->json(['error' => $exception], 500);
-        }
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\UserInfo  $userInfo
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(UserInfo $userInfo)
-    {
 
-        if (Auth::guard('api')->check()) { // Check if user is logged in
-            if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin TODO: change to admin
-
-                try {
-                    $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
-
-                    if ($userInfo->profile_picture_path != $defaultImagePath && file_exists($userInfo->profile_picture_path)) {
-                        Storage::disk('public')->delete($userInfo->profile_picture_path);
-                    }
-
-                    $userInfo->delete();
-                    return response()->json(['message' => 'Deleted'], 205);
-                } catch (Exception $exception) {
-                    return response()->json(['error' => $exception], 500);
-                }
-
-            } else {
-                // Return unauthorized response if not authenticated
-                return response()->json("Not Enough Permissions", 401);
-            }
         } else {
-            // Return unauthorized response if not authenticated
-            return response()->json("Not authenticated", 401);
+            return response()->json("Not authorized", 401);
         }
-
     }
 }

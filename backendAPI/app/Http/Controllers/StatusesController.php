@@ -11,23 +11,15 @@ class StatusesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index()
     {
-        if (Auth::guard("api")->check()) {
-            if (Auth::guard("api")->user()->hasRole("admin")) {
-                try {
-                    $statuses = Statuses::all();
-                    return response()->json($statuses, 200);
-                } catch (Exception $exception) {
-                    return response()->json(["error" => $exception], 500);
-                }
-            } else {
-                return response()->json("Not enough permissions", 401);
-            }
-        } else {
-            return response()->json("Not authenticated", 401);
+        try {
+            $statuses = Statuses::all();
+            return response()->json($statuses, 200);
+        } catch (Exception $exception) {
+            return response()->json(["error" => $exception], 500);
         }
     }
 
@@ -95,6 +87,7 @@ class StatusesController extends Controller
      */
     public function destroy(Statuses $status)
     {
+        \Log::info($status);
         if (Auth::guard("api")->check()) {
             if (Auth::guard("api")->user()->hasRole("admin")) {
                 try {

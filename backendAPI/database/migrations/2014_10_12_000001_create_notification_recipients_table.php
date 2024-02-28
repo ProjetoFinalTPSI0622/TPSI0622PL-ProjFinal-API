@@ -16,7 +16,7 @@ class CreateNotificationRecipientsTable extends Migration
         Schema::create('notification_recipients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('notification_id')->constrained('notifications');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->onUpdate('cascade');
             $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
