@@ -66,8 +66,6 @@ class TicketCreatedEventListener
             $q->where('name', 'admin');
         })->get();
 
-        Mail::to('fabiomiguel3.10@gmail.com')->queue(new TicketCreatedMail($ticket));
-
         foreach($users as $user){
             Mail::to($user->email)->queue(new TicketCreatedMail($ticket));
         }

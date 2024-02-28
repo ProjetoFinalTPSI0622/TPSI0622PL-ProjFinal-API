@@ -62,8 +62,6 @@ class TicketAssignedEventListener
         $ticket->load('assignedto', 'createdby');
         $ticket = json_decode($ticket, true);
 
-        Mail::to('fabiomiguel3.10@gmail.com')->queue(new TicketAssignedMail($ticket));
-
         Mail::to($ticket['assignedto']['email'])->queue(new TicketAssignedMail($ticket));
         Mail::to($ticket['createdby']['email'])->queue(new TicketAssignedMail($ticket));
 
