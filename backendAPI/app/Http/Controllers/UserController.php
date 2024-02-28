@@ -153,23 +153,28 @@ class UserController extends Controller
     {
         if (Auth::guard('api')->user()->hasRole('admin')) { // Check if user is admin
 
-            try {
-                $user->roles()->detach();
+            if (!$user->hasRole('admin')) {
 
-                if ($user->userInfo) {
-                    $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
-                    if ($user->userInfo->profile_picture_path != $defaultImagePath) {
-                        Storage::disk('public')->delete($user->userInfo->profile_picture_path);
+                try {
+                    $user->roles()->detach();
+
+                    if ($user->userInfo) {
+                        $defaultImagePath = 'defaultImageUsers/DefaultUser.png';
+                        if ($user->userInfo->profile_picture_path != $defaultImagePath) {
+                            Storage::disk('public')->delete($user->userInfo->profile_picture_path);
+                        }
+
+                        UserInfo::deleted($user->userInfo);
                     }
 
-                    UserInfo::deleted($user->userInfo);
+                    $user->delete();
+
+                    return response()->json(['message' => 'User deleted'], 200);
+                } catch (Exception $e) {
+                    return response()->json($e->getMessage(), 500);
                 }
-
-                $user->delete();
-
-                return response()->json(['message' => 'User deleted'], 200);
-            } catch (Exception $e) {
-                return response()->json($e->getMessage(), 500);
+            } else {
+                return response()->json("Cannot delete admin user", 401);
             }
 
         } else {
@@ -187,7 +192,7 @@ class UserController extends Controller
             try {
                 $search = $request->get('search');
                 $users = User::where('name', 'LIKE', '%' . $search . '%') //search by either name or email
-                ->orWhere('email', 'LIKE', '%' . $search . '%')
+                    ->orWhere('email', 'LIKE', '%' . $search . '%')
                     ->get();
                 return response()->json($users, 200);
             } catch (Exception $e) {
