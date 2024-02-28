@@ -116,6 +116,7 @@ class CommentsController extends Controller
      */
     public function destroy(Comments $comment)
     {
+
         if (Auth::guard('api')->user()->id == $comment->user_id) {
 
             try {

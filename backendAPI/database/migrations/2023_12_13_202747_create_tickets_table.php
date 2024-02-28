@@ -27,8 +27,8 @@ class CreateTicketsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('createdby')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
-            $table->foreign('assignedto')->references('id')->on('users')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('createdby')->references('id')->on('users');
+            $table->foreign('assignedto')->references('id')->on('users');
 
             $table->foreign('status')->references('id')->on('statuses');
             $table->foreign('priority')->references('id')->on('priorities');
