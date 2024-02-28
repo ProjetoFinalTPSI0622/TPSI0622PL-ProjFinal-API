@@ -53,6 +53,7 @@ Route::group(['prefix' => 'tickets', 'middleware' => 'checkAuth'], function() {
 
     Route::put('{ticket}/status/{status}', 'TicketsController@changeStatus');
     Route::put('{ticket}/priority/{priority}', 'TicketsController@changePriority');
+    Route::put('{ticket}/location/{location}', 'TicketsController@changeLocation');
 
     Route::get('/', 'TicketsController@index');
     Route::post ('/', 'TicketsController@store');

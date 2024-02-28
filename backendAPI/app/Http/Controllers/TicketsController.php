@@ -18,6 +18,7 @@ use App\Notifications\ticketCreated;
 use App\Statuses;
 use App\Priorities;
 use App\Tickets;
+use App\Location;
 use App\UserInfo;
 use App\User;
 use Exception;
@@ -338,6 +339,28 @@ class TicketsController extends Controller
                 $ticket->load('createdby', 'assignedto', 'status', 'category', 'location','priority');
                 $ticket['updated_by'] = Auth::guard('api')->user();
                 event(new TicketStatusChangedEvent($ticket));
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            return response()->json($ticket, 200);
+        } else {
+            return response()->json('Not enough permissions', 400);
+        }
+    }
+
+    public function changeLocation(Tickets $ticket, Location $location)
+    {
+        if (Auth::guard('api')->user()->hasRole('admin') || Auth::guard('api')->user()->hasRole('technician')) {
+            try {
+
+                $ticket->location = $location->id;
+                $ticket->save();
+            } catch (Exception $e) {
+                return response()->json($e->getMessage(), 500);
+            }
+            try {
+                $ticket->load('createdby', 'assignedto', 'status', 'category', 'location','priority');
+                $ticket['updated_by'] = Auth::guard('api')->user();
             } catch (Exception $e) {
                 return response()->json($e->getMessage(), 500);
             }
