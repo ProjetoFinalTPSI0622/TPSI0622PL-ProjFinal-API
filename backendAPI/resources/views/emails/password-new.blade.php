@@ -475,8 +475,8 @@
                                                                                                                             sua
                                                                                                                             nova
                                                                                                                             password
-                                                                                                                            é:
-                                                                                                                            <span class="font-weight-bold text-center">O seu NIF</span>
+                                                                                                                            é
+                                                                                                                            <span class="font-weight-bold text-center">o seu NIF</span>
                                                                                                                         </p>
                                                                                                         </td>
                                                                                                     </tr>

@@ -533,7 +533,7 @@
                                                                                                         <td class="t103"
                                                                                                             style="background-color:#312052;overflow:hidden;width:326px;text-align:center;line-height:50px;mso-line-height-rule:exactly;mso-text-raise:10px;border-radius:14px 14px 14px 14px;">
                                                                                                             <a class="t109"
-                                                                                                                href="https://tabular.email"
+                                                                                                                href="https://cesaedesk.atec-porto.eu/tickets/{{ $ticket['id'] }}"
                                                                                                                 style="display:block;margin:0;Margin:0;font-family:BlinkMacSystemFont,Segoe UI,Helvetica Neue,Arial,sans-serif,'Inter';line-height:50px;font-weight:600;font-style:normal;font-size:18px;text-decoration:none;direction:ltr;color:#FFFFFF;text-align:center;mso-line-height-rule:exactly;mso-text-raise:10px;"
                                                                                                                 target="_blank">VER
                                                                                                                 TICKET</a>

@@ -25,7 +25,7 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
+            'name' => 'required|max:60|regex:/^[a-zA-Z\s]*$/',
             'email' => 'required|email|unique:users,email,' . $this->user->id . '|max:255',
             'internalcode' => 'required|max:255',
             'role' => 'required|integer|exists:roles,id'
@@ -42,6 +42,7 @@ class UpdateUserRequest extends FormRequest
         return [
             'name.required' => 'O nome é obrigatório',
             'name.max'  => 'O nome deve ter menos de 255 caracteres',
+            'name.regex' => 'O nome deve conter apenas letras e espaços',
             'email.required' => 'O email é obrigatório',
             'email.email' => 'O email deve ser um email válido',
             'email.unique' => 'O email já existe',
